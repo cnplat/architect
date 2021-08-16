@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+  
+  traefik:
+    image: traefik:v2.4
+    restart: always
+    command: 
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --api.debug=true
+      - --providers.docker
+      - --entryPoints.web.address=:80
+      # - --entryPoints.websecure.address=:443
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  infra:
