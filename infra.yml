@@ -50,6 +50,16 @@ services:
     ports:
       - "0.0.0.0:18080:8080"
 
+  mongo:
+    image: mongo
+    volumes:
+      - "mongo_data:/data/db"
+    ports:
+      - "0.0.0.0:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+
   redis:
     image: redis
     restart: always
@@ -85,6 +95,7 @@ services:
 
 volumes:
   mysql_data:
+  mongo_data:
   redis_data:
 
 networks:
