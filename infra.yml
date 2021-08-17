@@ -38,13 +38,11 @@ services:
   adminer:
     image: adminer
     restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.adminer.rule=Host(`adminer-192-168-33-10.nip.io`)"
-      # - "traefik.http.routers.adminer.rule=Host(`adminer-192-168-33-10.nip.io`) && PathPrefix(`/api`)"
-      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
-      - "traefik.http.routers.adminer.entrypoints=web"
-      # - "traefik.http.routers.adminer.tls=true"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.adminer.rule=Host(`adminer-192-168-33-10.nip.io`)"
+    #   - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+    #   - "traefik.http.routers.adminer.entrypoints=web"
     links:
       - mysql
     depends_on:
@@ -63,12 +61,11 @@ services:
   rediscommander:
     image: rediscommander/redis-commander:latest
     restart: always
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.rediscommander.rule=Host(`rediscommander-192-168-33-10.nip.io`)"
-      - "traefik.http.services.rediscommander.loadbalancer.server.port=8081"
-      - "traefik.http.routers.rediscommander.entrypoints=web, websecure"
-      - "traefik.http.routers.rediscommander.tls=true"
+    # labels:
+    #   - "traefik.enable=true"
+    #   - "traefik.http.routers.rediscommander.rule=Host(`rediscommander-192-168-33-10.nip.io`)"
+    #   - "traefik.http.services.rediscommander.loadbalancer.server.port=8081"
+    #   - "traefik.http.routers.rediscommander.entrypoints=web"
     depends_on:
       - redis
     environment:
@@ -79,9 +76,7 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     environment:
-      # vhost:
       DEFAULT_VHOST: "exchange_server"
-      # user:
       DEFAULT_USER: "rabbit"
       DEFAULT_PASS: "rabbit"
     ports:
