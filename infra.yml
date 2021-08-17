@@ -1,0 +1,84 @@
+version: '3.9'
+
+services:
+  traefik:
+    image: traefik:v2.4
+    restart: always
+    command: 
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --api.debug=true
+      - --providers.docker
+      - --entryPoints.web.address=:80
+      # - --entryPoints.websecure.address=:443
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: root    # root: root
+      # project:
+      MYSQL_DATABASE: dev
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev
+    # fix utf8:
+    command: >
+      mysqld
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "0.0.0.0:3306:3306"
+
+  adminer:
+    image: adminer
+    restart: always
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    ports:
+      - "0.0.0.0:18080:8080"
+
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "0.0.0.0:6379:6379"
+    volumes:
+      - redis_data:/data
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    restart: always
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "0.0.0.0:18081:8081"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      # vhost:
+      DEFAULT_VHOST: "exchange_server"
+      # user:
+      DEFAULT_USER: "rabbit"
+      DEFAULT_PASS: "rabbit"
+    ports:
+      - "0.0.0.0:15672:15672"
+      - "0.0.0.0:5672:5672"
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  infra:
