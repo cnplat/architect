@@ -19,5 +19,6 @@
  - [Portainer](https://documentation.portainer.io/quickstart/): http://192.168.33.10:9000/
  - [Traefik](https://doc.traefik.io/traefik/): http://192.168.33.10:8080/
  - Adminer: http://192.168.33.10:18080/
- - Mongo Express: http://192.168.33.10:18082/
  - Redis commander: http://192.168.33.10:18081/
+ - Mongo Express: http://192.168.33.10:18082/
+ - nsqadmin: http://192.168.33.10:4171/
