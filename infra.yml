@@ -51,7 +51,7 @@ services:
       - "0.0.0.0:18080:8080"
 
   mongo:
-    image: mongo
+    image: mongo:4.4
     volumes:
       - "mongo_data:/data/db"
     ports:
