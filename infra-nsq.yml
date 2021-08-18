@@ -15,9 +15,20 @@ services:
       - nsqlookupd
     volumes:
       - nsq_data:/data
-    ports:
-      - "0.0.0.0:4150:4150"
-      - "0.0.0.0:4151:4151"
+    # ports:
+    #   - "0.0.0.0:4150:4150"
+    #   - "0.0.0.0:4151:4151"
+
+  nsqd2:
+    image: nsqio/nsq
+    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+    depends_on:
+      - nsqlookupd
+    volumes:
+      - nsq_data2:/data
+    # ports:
+    #   - "0.0.0.0:4150:4150"
+    #   - "0.0.0.0:4151:4151"
   
   nsqadmin:
     image: nsqio/nsq
@@ -29,6 +40,7 @@ services:
 
 volumes:
   nsq_data:
+  nsq_data2:
 
 networks:
   infra:
