@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  nsqlookupd:
+    image: nsqio/nsq
+    command: /nsqlookupd
+    ports:
+      - "0.0.0.0:4160"
+      - "0.0.0.0:4161"
+
+  nsqd:
+    image: nsqio/nsq
+    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+    depends_on:
+      - nsqlookupd
+    volumes:
+      - nsq_data:/data
+    ports:
+      - "0.0.0.0:4150"
+      - "0.0.0.0:4151"
+  
+  nsqadmin:
+    image: nsqio/nsq
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    depends_on:
+      - nsqlookupd  
+    ports:
+      - "0.0.0.0:4171"
+
+volumes:
+  nsq_data:
+
+networks:
+  infra:

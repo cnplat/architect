@@ -1,4 +1,4 @@
-
+# dev
 
 ## Step 1
 
@@ -7,7 +7,7 @@
 2. visit [Portainer](https://documentation.portainer.io/quickstart/): http://192.168.33.10:9000/
 3. deploy stack use `infra.yml` file.
 
-# Service
+## Service
 
  - [Traefik](https://doc.traefik.io/traefik/) :80 :8080
  - Mysql :3306
@@ -15,7 +15,7 @@
  - Redis :6379
  - Rabbitmq :5672 :15672
 
-# Admin Web Port
+## Admin Web Port
  - [Portainer](https://documentation.portainer.io/quickstart/): http://192.168.33.10:9000/
  - [Traefik](https://doc.traefik.io/traefik/): http://192.168.33.10:8080/
  - Adminer: http://192.168.33.10:18080/
