@@ -11,6 +11,7 @@
 
  - [Traefik](https://doc.traefik.io/traefik/) :80 :8080
  - Mysql :3306
+ - Mongodb :27017
  - Redis :6379
  - Rabbitmq :5672 :15672
 
@@ -18,4 +19,5 @@
  - [Portainer](https://documentation.portainer.io/quickstart/): http://192.168.33.10:9000/
  - [Traefik](https://doc.traefik.io/traefik/): http://192.168.33.10:8080/
  - Adminer: http://192.168.33.10:18080/
+ - Mongo Express: http://192.168.33.10:18082/
  - Redis commander: http://192.168.33.10:18081/

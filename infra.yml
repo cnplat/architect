@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v2.4
+    image: traefik:v2.5
     restart: always
     command: 
       - --api.insecure=true
@@ -24,7 +24,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql/
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: dev
       MYSQL_USER: dev
       MYSQL_PASSWORD: dev
@@ -50,6 +50,32 @@ services:
     ports:
       - "0.0.0.0:18080:8080"
 
+  mongo:
+    image: mongo:4.4
+    volumes:
+      - "mongo_data:/data/db"
+    ports:
+      - "0.0.0.0:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+
+  mongo-express:
+    image: mongo-express:0.54
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    ports:
+      - "0.0.0.0:18082:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER: "mongo"
+      - ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
+      - ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+      - ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+      #- ME_CONFIG_BASICAUTH_USERNAME: ""
+      #- ME_CONFIG_BASICAUTH_PASSWORD: ""
+
   redis:
     image: redis
     restart: always
@@ -61,11 +87,6 @@ services:
   rediscommander:
     image: rediscommander/redis-commander:latest
     restart: always
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.rediscommander.rule=Host(`rediscommander-192-168-33-10.nip.io`)"
-    #   - "traefik.http.services.rediscommander.loadbalancer.server.port=8081"
-    #   - "traefik.http.routers.rediscommander.entrypoints=web"
     depends_on:
       - redis
     environment:
@@ -85,6 +106,7 @@ services:
 
 volumes:
   mysql_data:
+  mongo_data:
   redis_data:
 
 networks:
