@@ -8,32 +8,32 @@ services:
       - "0.0.0.0:4160:4160"
       - "0.0.0.0:4161:4161"
 
-  nsqd:
+  nsqd1:
     image: nsqio/nsq
     command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
     depends_on:
       - nsqlookupd
     volumes:
       - nsq_data:/data
-    # ports:
-    #   - "0.0.0.0:4150:4150"
-    #   - "0.0.0.0:4151:4151"
+    ports:
+      - "0.0.0.0:4150:4150"
+      - "0.0.0.0:4151:4151"
 
-  nsqd2:
-    image: nsqio/nsq
-    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
-    depends_on:
-      - nsqlookupd
-    volumes:
-      - nsq_data2:/data
+  # nsqd2:
+  #   image: nsqio/nsq
+  #   command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+  #   depends_on:
+  #     - nsqlookupd
+  #   volumes:
+  #     - nsq_data2:/data
 
-  nsqd3:
-    image: nsqio/nsq
-    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
-    depends_on:
-      - nsqlookupd
-    volumes:
-      - nsq_data3:/data
+  # nsqd3:
+  #   image: nsqio/nsq
+  #   command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+  #   depends_on:
+  #     - nsqlookupd
+  #   volumes:
+  #     - nsq_data3:/data
   
   nsqadmin:
     image: nsqio/nsq
