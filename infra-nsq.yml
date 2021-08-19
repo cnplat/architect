@@ -47,6 +47,3 @@ volumes:
   nsq_data:
   # nsq_data2:
   # nsq_data3:
-
-networks:
-  infra:
