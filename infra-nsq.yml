@@ -4,13 +4,18 @@ services:
   nsqlookupd:
     image: nsqio/nsq:v1.2.0
     command: /nsqlookupd
+    restart: always
     ports:
       - "0.0.0.0:4160:4160"
       - "0.0.0.0:4161:4161"
 
   nsqd1:
     image: nsqio/nsq:v1.2.0
-    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160 
+      -broadcast-address=192.168.33.10
+      -tcp-address=0.0.0.0:4150
+      -http-address=0.0.0.0:4151
+    restart: always
     depends_on:
       - nsqlookupd
     volumes:
@@ -19,25 +24,10 @@ services:
       - "0.0.0.0:4150:4150"
       - "0.0.0.0:4151:4151"
 
-  # nsqd2:
-  #   image: nsqio/nsq:v1.2.0
-  #   command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
-  #   depends_on:
-  #     - nsqlookupd
-  #   volumes:
-  #     - nsq_data2:/data
-
-  # nsqd3:
-  #   image: nsqio/nsq:v1.2.0
-  #   command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
-  #   depends_on:
-  #     - nsqlookupd
-  #   volumes:
-  #     - nsq_data3:/data
-  
   nsqadmin:
     image: nsqio/nsq:v1.2.0
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    restart: always
     depends_on:
       - nsqlookupd
     ports:
@@ -45,8 +35,3 @@ services:
 
 volumes:
   nsq_data:
-  # nsq_data2:
-  # nsq_data3:
-
-networks:
-  infra:

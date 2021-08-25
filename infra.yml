@@ -52,6 +52,7 @@ services:
 
   mongo:
     image: mongo:4.4
+    restart: always
     volumes:
       - "mongo_data:/data/db"
     ports:
@@ -62,6 +63,7 @@ services:
 
   mongo-express:
     image: mongo-express:0.54
+    restart: always
     depends_on:
       - mongo
     links:
@@ -96,6 +98,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
+    restart: always
     environment:
       DEFAULT_VHOST: "exchange_server"
       DEFAULT_USER: "rabbit"
