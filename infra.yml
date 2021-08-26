@@ -87,6 +87,14 @@ services:
     volumes:
       - redis_data:/data
 
+  php:
+    image: cnbattle/docker-php:runner
+    container_name: php
+    volumes:
+      - www_data:/www
+    restart: always
+
+
   rediscommander:
     image: rediscommander/redis-commander:latest
     restart: always
@@ -111,6 +119,7 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
+  www_data:
   mysql_data:
   mongo_data:
   mongo_configdb:
