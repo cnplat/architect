@@ -94,7 +94,6 @@ services:
       - www_data:/www
     restart: always
 
-
   rediscommander:
     image: rediscommander/redis-commander:latest
     restart: always
@@ -146,7 +145,6 @@ services:
       - nsqlookupd
     ports:
       - "0.0.0.0:4171:4171"
-
 
 volumes:
   www_data:
