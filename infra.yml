@@ -118,6 +118,36 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  nsqlookupd:
+    image: nsqio/nsq:v1.2.0
+    restart: always
+    command: /nsqlookupd
+    ports:
+      - "0.0.0.0:4160:4160"
+      - "0.0.0.0:4161:4161"
+
+  nsqd:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+    restart: always
+    depends_on:
+      - nsqlookupd
+    volumes:
+      - nsq_data:/data
+    ports:
+      - "0.0.0.0:4150:4150"
+      - "0.0.0.0:4151:4151"
+  
+  nsqadmin:
+    image: nsqio/nsq:v1.2.0
+    restart: always
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    depends_on:
+      - nsqlookupd
+    ports:
+      - "0.0.0.0:4171:4171"
+
+
 volumes:
   www_data:
   mysql_data:
@@ -125,3 +155,4 @@ volumes:
   mongo_configdb:
   redis_data:
   rabbitmq_data:
+  nsq_data:
