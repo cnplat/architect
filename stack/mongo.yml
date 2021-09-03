@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:4.4
+    restart: always
+    volumes:
+      - "mongo_data:/data/db"
+    ports:
+      - "0.0.0.0:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    networks:
+      - infra
+
+  mongo-express:
+    image: mongo-express:0.54
+    restart: always
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - "node.role!=manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.mongo-express.rule=Host(`mongo-express-192-168-33-11.nip.io`)"
+        - "traefik.http.services.mongo-express.loadbalancer.server.port=8081"
+        - "traefik.http.routers.mongo-express.entrypoints=web"
+        - "traefik.docker.lbswarm=true"
+          # admin joyoo.vip
+        - "traefik.http.middlewares.mongo-express-auth.basicauth.users=admin:$$apr1$$4fcNlBLI$$Ryvin9FrYWV8v5KFwko5K1"
+        - "traefik.http.routers.mongo-express.middlewares=mongo-express-auth"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_SERVER: "mongo"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+      ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+      #ME_CONFIG_BASICAUTH_USERNAME: ""
+      #ME_CONFIG_BASICAUTH_PASSWORD: ""
+    networks:
+      - infra
+
+networks:
+  infra:
+    external: true
+
+volumes:
+  mongo_data:

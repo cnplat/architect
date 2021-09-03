@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  nsqlookupd:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqlookupd
+    restart: always
+    ports:
+      - "0.0.0.0:4160:4160"
+      - "0.0.0.0:4161:4161"
+    deploy:
+      placement:
+        constraints:
+          - "node.role!=manager"
+
+  nsqd:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+    restart: always
+    depends_on:
+      - nsqlookupd
+    volumes:
+      - nsq_data:/data
+    # ports:
+    #   - "0.0.0.0:4150:4150"
+    #   - "0.0.0.0:4151:4151"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.role!=manager"
+
+  nsqadmin:
+    image: nsqio/nsq:v1.2.0
+    command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
+    restart: always
+    depends_on:
+      - nsqlookupd
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - "node.role!=manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.nsqadmin.rule=Host(`nsqadmin-192-168-33-11.nip.io`)"
+        - "traefik.http.services.nsqadmin.loadbalancer.server.port=4171"
+        - "traefik.http.routers.nsqadmin.entrypoints=web"
+        - "traefik.docker.lbswarm=true"
+          # admin joyoo.vip
+        - "traefik.http.middlewares.nsqadmin-auth.basicauth.users=admin:$$apr1$$4fcNlBLI$$Ryvin9FrYWV8v5KFwko5K1"
+        - "traefik.http.routers.nsqadmin.middlewares=nsqadmin-auth"
+
+volumes:
+  nsq_data:

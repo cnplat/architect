@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  whoami:
+    image: containous/whoami
+    restart: always
+    deploy:
+      replicas: 3
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - "node.role!=manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.whoami.rule=Host(`whoami-192-168-33-11.nip.io`)"
+        - "traefik.http.services.whoami.loadbalancer.server.port=80"
+        - "traefik.http.routers.whoami.entrypoints=web"
+    networks:
+      - infra
+
+  whoami2:
+    image: containous/whoami
+    restart: always
+    deploy:
+      replicas: 3
+      endpoint_mode: vip
+      placement:
+        constraints:
+          - "node.role!=manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.whoami2.rule=Host(`whoami2-192-168-33-11.nip.io`)"
+        - "traefik.http.services.whoami2.loadbalancer.server.port=80"
+        - "traefik.http.routers.whoami2.entrypoints=web"
+        - "traefik.docker.lbswarm=true"
+    networks:
+      - infra
+
+networks:
+  infra:
+    external: true

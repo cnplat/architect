@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: dev
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: dev
+    command: >
+      mysqld
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "0.0.0.0:3306:3306"
+    networks:
+      - infra
+
+  adminer:
+    image: adminer
+    restart: always
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - "node.role!=manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.adminer.rule=Host(`adminer-192-168-33-11.nip.io`)"
+        - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+        - "traefik.http.routers.adminer.entrypoints=web"
+        - "traefik.docker.lbswarm=true"
+          # admin joyoo.vip
+        - "traefik.http.middlewares.adminer-auth.basicauth.users=admin:$$apr1$$4fcNlBLI$$Ryvin9FrYWV8v5KFwko5K1"
+        - "traefik.http.routers.adminer.middlewares=adminer-auth"
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    networks:
+      - infra
+
+networks:
+  infra:
+    external: true
+
+volumes:
+  mysql_data:

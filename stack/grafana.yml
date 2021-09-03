@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+    ports:
+      - "0.0.0.0:9090:9090"
+    deploy:
+      replicas: 1
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - "node.role!=manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.prometheus.rule=Host(`prometheus-192-168-33-11.nip.io`)"
+        - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+        - "traefik.http.routers.prometheus.entrypoints=web"
+    # volumes:
+      # - /var/run/docker.sock:/etc/prometheus/prometheus.yml
+    networks:
+      - traefik
+
+  grafana:
+    image: grafana/grafana-enterprise
+    restart: always
+    deploy:
+      replicas: 1
+      endpoint_mode: dnsrr
+      placement:
+        constraints:
+          - "node.role!=manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.grafana.rule=Host(`grafana-192-168-33-11.nip.io`)"
+        - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+        - "traefik.http.routers.grafana.entrypoints=web"
+    networks:
+      - traefik
+
+configs:
+  prometheus_config:
+    external: true
+
+networks:
+  traefik:
+    external: true

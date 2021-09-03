@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v2.5
+    restart: always
+    command: 
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.swarmMode=true
+      - --metrics.prometheus=true
+      # 用于公开指标的入口点
+      - --metrics.prometheus.entryPoint=metrics
+      - --entryPoints.metrics.address=:8082
+      # 延迟指标的存储桶。
+      - --metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000
+      # 在入口点启用指标
+      - --metrics.prometheus.addEntryPointsLabels=true
+      # 启用服务指标。
+      - --metrics.prometheus.addServicesLabels=true
+      # 在路由器上启用指标
+      - --metrics.prometheus.addrouterslabels=true
+      # 启用 Jaeger
+      - --tracing.jaeger=true
+      - --tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling
+      - --tracing.jaeger.samplingType=const
+      - --tracing.jaeger.samplingParam=1.0
+      - --tracing.jaeger.localAgentHostPort=jaeger:6831
+      - --tracing.jaeger.gen128Bit
+      - --tracing.jaeger.propagation=jaeger
+      - --tracing.jaeger.disableAttemptReconnecting=true
+      # 访问日志
+      - --accesslog.filepath=/data/access.log
+      - --accesslog.bufferingsize=100
+    deploy:
+      placement:
+        constraints:
+          - "node.role==manager"
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:8080:8080"
+      - "0.0.0.0:8082:8082"
+    volumes:
+      - traefik_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  traefik_data:
