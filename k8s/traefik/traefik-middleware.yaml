@@ -1,0 +1,58 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: stripprefix
+
+spec:
+  stripPrefix:
+    prefixes:
+      - /stripit
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: baseauth
+spec:
+  basicAuth:
+# htpasswd -nb user password | openssl base64
+# cnbattle     123456
+# cnbattle.com 123456
+    users: |2
+      Y25iYXR0bGU6JGFwcjEkUXBrZ3BDZEQkdWpQQkpQLlU0MFRLZFV3Q2p3ZnN0MQoK
+      Y25iYXR0bGUuY29tOiRhcHIxJGIyM244dHpDJGV0NEc1SHZlTS9EclB6eFJoblV5SS4KCg==
+
+---
+# Enable gzip compression
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: compress
+spec:
+  compress: {}
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: errorpage
+spec:
+  errors:
+    status:
+      - "500-599"
+    query: /{status}
+    service:
+      name: whoami
+      port: 80
+
+---
+# Here, an average of 100 requests per second is allowed.
+# In addition, a burst of 50 requests is allowed.
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: ratelimit
+spec:
+  rateLimit:
+    average: 100
+    burst: 50

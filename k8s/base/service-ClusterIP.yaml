@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-app
+spec:
+  # 副本数
+  replicas: 3 
+  selector: 
+    matchLabels:
+      app: nginx-clusterip
+  template:
+    metadata:
+      labels:
+        app: nginx-clusterip
+    spec:
+      containers:
+      - name: nginx-clusterip
+        image: nginx:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-clusterip-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx-clusterip
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

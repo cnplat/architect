@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: k8s-cnbattle.com
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`k8s.cnbattle.com`) && PathPrefix(`/whoami`)
+      services:
+      - name: whoami
+        port: 80
