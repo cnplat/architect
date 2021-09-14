@@ -43,6 +43,9 @@ services:
       - "0.0.0.0:8080:8080"
       - "0.0.0.0:8082:8082"
     volumes:
+      # sync the time
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
       - traefik_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
