@@ -9,9 +9,9 @@ services:
       - --api.dashboard=true
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
-      # 启用 docker swarmMode
+      # 启用 docker
       - --providers.docker.exposedByDefault=false
-      - --providers.docker.swarmMode=true
+      - --providers.docker.endpoint = "unix:///var/run/docker.sock"
       # 启用 metrics
       - --metrics.prometheus=true
       - --entryPoints.metrics.address=:8082
@@ -33,10 +33,6 @@ services:
       # 访问日志
       - --accesslog.filepath=/data/access.log
       - --accesslog.bufferingsize=100
-    deploy:
-      placement:
-        constraints:
-          - "node.role==manager"
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
@@ -45,6 +41,44 @@ services:
     volumes:
       - traefik_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`prometheus-192-168-33-11.nip.io`)"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.http.routers.prometheus.entrypoints=web"
+    networks:
+      - traefik
+
+  grafana:
+    image: grafana/grafana-enterprise
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana-192-168-33-11.nip.io`)"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.routers.grafana.entrypoints=web"
+    networks:
+      - traefik
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.25
+    restart: always
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.rule=Host(`jaeger-192-168-33-11.nip.io`)"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=16686"
+      - "traefik.http.routers.prometheus.entrypoints=web"
     networks:
       - traefik
 
