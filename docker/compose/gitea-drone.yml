@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  server:
+    image: gitea/gitea:1.15.2
+    container_name: gitea
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gitea.rule=Host(`gitea-192-168-33-11.nip.io`)"
+      - "traefik.http.services.gitea.loadbalancer.server.port=3000"
+      - "traefik.http.routers.gitea.entrypoints=web"
+    networks:
+      - traefik
+    volumes:
+      - gitea_data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "2222:22"
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  gitea_data:
