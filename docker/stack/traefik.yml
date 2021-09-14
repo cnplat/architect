@@ -62,7 +62,7 @@ services:
       endpoint_mode: dnsrr
       placement:
         constraints:
-          - "node.role!=manager"
+          - "node.role==manager"
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.prometheus.rule=Host(`prometheus-192-168-33-11.nip.io`)"
@@ -79,7 +79,7 @@ services:
       endpoint_mode: dnsrr
       placement:
         constraints:
-          - "node.role!=manager"
+          - "node.role==manager"
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.grafana.rule=Host(`grafana-192-168-33-11.nip.io`)"
@@ -101,9 +101,9 @@ services:
           - "node.role==manager"
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.prometheus.rule=Host(`jaeger-192-168-33-11.nip.io`)"
-        - "traefik.http.services.prometheus.loadbalancer.server.port=16686"
-        - "traefik.http.routers.prometheus.entrypoints=web"
+        - "traefik.http.routers.jaeger.rule=Host(`jaeger-192-168-33-11.nip.io`)"
+        - "traefik.http.services.jaeger.loadbalancer.server.port=16686"
+        - "traefik.http.routers.jaeger.entrypoints=web"
     networks:
       - traefik
 
