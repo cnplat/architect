@@ -37,10 +37,15 @@ services:
       placement:
         constraints:
           - "node.role==manager"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.traefik-dash-api.entrypoints=web"
+        - "traefik.http.routers.traefik-dash-api.rule=Host(`traefik-192-168-33-11.nip.io`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+        - "traefik.http.routers.traefik-dash-api.service=api@internal"
+        - "traefik.http.services.dummy-svc.loadbalancer.server.port=9999"
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
-      - "0.0.0.0:8080:8080"
     volumes:
       # sync the time
       - /etc/localtime:/etc/localtime:ro

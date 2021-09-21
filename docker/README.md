@@ -22,3 +22,23 @@
  - Redis commander: http://192.168.33.10:18081/
  - Mongo Express: http://192.168.33.10:18082/
  - nsqadmin: http://192.168.33.10:4171/
+
+ ## prometheus_config
+ ```yaml
+global:
+  scrape_interval:     60s
+  evaluation_interval: 60s
+ 
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          instance: prometheus
+ 
+  - job_name: traefik
+    static_configs:
+      - targets: ['traefik:8082']
+        labels:
+          instance: traefik
+ ```
