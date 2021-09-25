@@ -30,13 +30,30 @@ spec:
             - --api.insecure
             - --entrypoints.web.address=:80
             - --entrypoints.websecure.address=:443
-            - --entrypoints.tcpep.address=:8000
-            - --entrypoints.udpep.address=:9000/udp
+            # - --entrypoints.tcpep.address=:8000
+            # - --entrypoints.udpep.address=:9000/udp
             - --providers.kubernetescrd
+            # 启用 metrics
+            - --metrics.prometheus=true
+            # 启用 prometheus
+            - --metrics.prometheus.entryPoint=metrics
+            - --metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000
+            - --metrics.prometheus.addEntryPointsLabels=true
+            - --metrics.prometheus.addServicesLabels=true
+            - --metrics.prometheus.addrouterslabels=true
+            # 启用 Jaeger
+            - --tracing.jaeger=true
+            - --tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling
+            - --tracing.jaeger.samplingType=const
+            - --tracing.jaeger.samplingParam=1.0
+            - --tracing.jaeger.localAgentHostPort=jaeger:6831
+            - --tracing.jaeger.gen128Bit
+            - --tracing.jaeger.propagation=jaeger
+            - --tracing.jaeger.disableAttemptReconnecting=true
+            # letsencrypt
             - --certificatesresolvers.myresolver.acme.tlschallenge
             - --certificatesresolvers.myresolver.acme.email=qiaicn@gmail.com
             - --certificatesresolvers.myresolver.acme.storage=acme.json
-            - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
             # Please note that this is the staging Let's Encrypt server.
             # Once you get things working, you should remove that whole line altogether.
             - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
@@ -47,10 +64,10 @@ spec:
               containerPort: 443
             - name: admin
               containerPort: 8080
-            - name: tcpep
-              containerPort: 8000
-            - name: udpep
-              containerPort: 9000
+            # - name: tcpep
+            #   containerPort: 8000
+            # - name: udpep
+            #   containerPort: 9000
 
 ---
 apiVersion: v1
