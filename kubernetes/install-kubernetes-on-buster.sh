@@ -43,9 +43,7 @@ curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add -
 cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
 deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF  
-apt-get update
-apt-get install -y kubelet kubeadm kubectl
-apt-mark hold kubelet kubeadm kubectl
+apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-mark hold kubelet kubeadm kubectl
 
 # initialize kubernetes with a Flannel compatible pod network CIDR
 kubeadm init --apiserver-advertise-address=0.0.0.0 \
@@ -54,11 +52,13 @@ kubeadm init --apiserver-advertise-address=0.0.0.0 \
 --ignore-preflight-errors=all \
 --kubernetes-version=1.22.3 \
 --service-cidr=10.10.0.0/16 \
---pod-network-cidr=10.18.0.0/16;
+--pod-network-cidr=10.18.0.0/16
 
 # setup kubectl
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config;
+mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 # install Flannel
-kubectl apply -f https://raw.fastgit.org/coreos/flannel/master/Documentation/kube-flannel.yml;
+kubectl apply -f https://raw.fastgit.org/coreos/flannel/master/Documentation/kube-flannel.yml
+
+# kubectl taints node master node-role.kubernetes.io/master:NoSchedule-
+# kubectl taints node master node.kubernetes.io/not-ready:NoSchedule-
