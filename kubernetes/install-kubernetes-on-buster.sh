@@ -29,7 +29,6 @@ apt-get install -y \
 
 # install docker
 curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
-mkdir /etc/docker;
 cat > /etc/docker/daemon.json <<EOF
 {
   "registry-mirrors": ["https://n3kgoynn.mirror.aliyuncs.com"],
