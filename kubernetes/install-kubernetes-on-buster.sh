@@ -58,3 +58,6 @@ mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 # install Flannel
 kubectl apply -f https://raw.fastgit.org/coreos/flannel/master/Documentation/kube-flannel.yml
+
+# del master taint
+kubectl taint nodes --all node-role.kubernetes.io/master-
