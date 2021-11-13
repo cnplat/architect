@@ -6,6 +6,7 @@
 ## Debian10 安装kubernetes
 ```
 curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubernetes-on-buster.sh | bash - 
+curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubernetes-on-buster-node.sh | bash - 
 ```
 
 ## 安装 kubernetes dashboard
