@@ -46,10 +46,10 @@ EOF
 apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-mark hold kubelet kubeadm kubectl
 
 # initialize kubernetes with a Flannel compatible pod network CIDR
-kubeadm init --control-plane-endpoint \
+kubeadm init --apiserver-advertise-address=0.0.0.0 \
+--apiserver-cert-extra-sans=127.0.0.1 \
 --image-repository=registry.aliyuncs.com/google_containers \
 --ignore-preflight-errors=all \
-# --kubernetes-version=1.22.3 \
 --service-cidr=10.10.0.0/16 \
 --pod-network-cidr=10.18.0.0/16
 
