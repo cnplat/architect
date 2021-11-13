@@ -21,26 +21,22 @@ sysctl --system;
 
 # install tools for adding apt sources
 apt-get update;
-apt-get install -y \
-  apt-transport-https \
-  ca-certificates \
-  curl \
-  gnupg2;
+apt-get install -y apt-transport-https ca-certificates curl gnupg2;
 
 # install docker
 curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
-cat > /etc/docker/daemon.json <<EOF
+cat <<EOF | sudo tee /etc/docker/daemon.json
 {
   "registry-mirrors": ["https://n3kgoynn.mirror.aliyuncs.com"],
   "exec-opts": ["native.cgroupdriver=systemd"]
 }
 EOF
-systemctl daemon-reload && sudo systemctl enable docker && sudo systemctl restart docker
+systemctl daemon-reload && systemctl enable docker && systemctl restart docker
 
 # install kubernetes
 apt-get update && apt-get install -y apt-transport-https
 curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add - 
-cat > /etc/apt/sources.list.d/kubernetes.list <<EOF
+cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
 deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
 EOF
 apt-get update && apt-get install -y kubelet kubeadm kubectl && apt-mark hold kubelet kubeadm kubectl
