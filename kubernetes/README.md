@@ -6,18 +6,18 @@
 ## Debian10 安装kubernetes
 ```
 # On master
-apt update -y && apt install curl -y \
+apt update -y && apt install curl -y && \
 curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubernetes-on-buster.sh | bash - 
 
 # On node
-apt update -y && apt install curl -y \
-curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubernetes-on-buster-node.sh | bash - 
+apt update -y && apt install curl -y && \
+curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubeadm-on-buster.sh | bash - 
 ```
 
 ## 安装 kubernetes dashboard
 ```
-kubectl apply -f metrics-server.yaml
-kubectl apply -f kubernetes-dashboard.yaml
-kubectl apply -f dashboard-adminuser.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
 kubectl describe secret admin-user --namespace=kube-system
 ```
