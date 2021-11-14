@@ -6,11 +6,11 @@
 ## Debian10 安装kubernetes
 ```
 # On master
-apt update -y && apt install curl -y && \
+apt update -y && apt upgrade -y && apt install curl -y && apt autoremove -y
 curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubernetes-on-buster.sh | bash - 
 
 # On node
-apt update -y && apt install curl -y && \
+apt update -y && apt upgrade -y && apt install curl -y && apt autoremove -y
 curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubeadm-on-buster.sh | bash - 
 ```
 
