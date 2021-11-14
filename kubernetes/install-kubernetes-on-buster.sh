@@ -48,14 +48,14 @@ kubeadm init --apiserver-advertise-address=0.0.0.0 \
 --image-repository=registry.aliyuncs.com/google_containers \
 --kubernetes-version=v1.21.6 \
 --ignore-preflight-errors=all \
---service-cidr=10.16.0.0/16 \
+--service-cidr=10.10.0.0/16 \
 --pod-network-cidr=10.18.0.0/16
 
 # setup kubectl
 mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
 # install Flannel
-kubectl apply -f https://raw.fastgit.org/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
 # del master taint
 kubectl taint nodes --all node-role.kubernetes.io/master-
