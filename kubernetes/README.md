@@ -20,8 +20,8 @@ kubeadm init --apiserver-advertise-address=0.0.0.0 \
 --apiserver-cert-extra-sans=127.0.0.1 \
 --image-repository=registry.aliyuncs.com/google_containers \
 --ignore-preflight-errors=all \
---service-cidr=10.10.0.0/16 \
---pod-network-cidr=10.18.0.0/16
+--service-cidr=10.18.0.0/16 \
+--pod-network-cidr=10.244.0.0/16
 
 # setup kubectl
 mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
