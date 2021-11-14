@@ -6,6 +6,7 @@ set -e;
 
 # disable swap
 swapoff -a;
+sed -ri 's/.*swap.*/#&/' /etc/fstab;
 
 # enable bridge netfilter
 modprobe br_netfilter;
