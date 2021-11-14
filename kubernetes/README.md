@@ -26,6 +26,9 @@ kubeadm init --apiserver-advertise-address=0.0.0.0 \
 # setup kubectl
 mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
+# del master taint
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
 # install Flannel
 kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation/kube-flannel.yml
 ```
