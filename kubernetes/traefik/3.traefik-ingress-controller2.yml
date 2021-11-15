@@ -1,0 +1,112 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: traefik-ingress-controller
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: traefik
+  labels:
+    app: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v2.5
+          args:
+            - --log.level=DEBUG
+            - --api
+            - --api.insecure
+            - --entrypoints.web.address=:80
+            - --entrypoints.websecure.address=:443
+            # - --entrypoints.tcpep.address=:8000
+            # - --entrypoints.udpep.address=:9000/udp
+            - --providers.kubernetescrd
+            # 启用 metrics
+            - --metrics.prometheus=true
+            # 启用 prometheus
+            - --metrics.prometheus.entryPoint=metrics
+            - --metrics.prometheus.buckets=0.100000, 0.300000, 1.200000, 5.000000
+            - --metrics.prometheus.addEntryPointsLabels=true
+            - --metrics.prometheus.addServicesLabels=true
+            - --metrics.prometheus.addrouterslabels=true
+            # 启用 Jaeger
+            - --tracing.jaeger=true
+            - --tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling
+            - --tracing.jaeger.samplingType=const
+            - --tracing.jaeger.samplingParam=1.0
+            - --tracing.jaeger.localAgentHostPort=jaeger:6831
+            - --tracing.jaeger.gen128Bit
+            - --tracing.jaeger.propagation=jaeger
+            - --tracing.jaeger.disableAttemptReconnecting=true
+            # letsencrypt
+            - --certificatesresolvers.myresolver.acme.tlschallenge
+            - --certificatesresolvers.myresolver.acme.email=qiaicn@gmail.com
+            - --certificatesresolvers.myresolver.acme.storage=acme.json
+            # Please note that this is the staging Let's Encrypt server.
+            # Once you get things working, you should remove that whole line altogether.
+            # - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+          ports:
+            - name: web
+              containerPort: 80
+            - name: websecure
+              containerPort: 443
+            - name: admin
+              containerPort: 8080
+            # - name: tcpep
+            #   containerPort: 8000
+            # - name: udpep
+            #   containerPort: 9000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik
+spec:
+  type: LoadBalancer
+  selector:
+    app: traefik
+  ports:
+    - protocol: TCP
+      port: 80
+      name: web
+      targetPort: 80
+    - protocol: TCP
+      port: 443
+      name: websecure
+      targetPort: 443
+    - protocol: TCP
+      port: 8080
+      name: admin
+      targetPort: 8080
+    - protocol: TCP
+      port: 8000
+      name: tcpep
+      targetPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefikudp
+spec:
+  type: LoadBalancer
+  selector:
+    app: traefik
+  ports:
+    - protocol: UDP
+      port: 9000
+      name: udpep
+      targetPort: 9000
