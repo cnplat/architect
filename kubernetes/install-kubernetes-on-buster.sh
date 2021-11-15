@@ -62,6 +62,11 @@ kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation
 # install metrics server
 kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
 
+# install metallb
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/namespace.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/metallb.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/config.yaml
+
 # install dashboard
 kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
 kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
