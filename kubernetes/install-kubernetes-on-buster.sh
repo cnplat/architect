@@ -53,8 +53,16 @@ kubeadm init --apiserver-advertise-address=0.0.0.0 \
 # setup kubectl
 mkdir -p $HOME/.kube && cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 
+# del master taint
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
 # install Flannel
 kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation/kube-flannel.yml
 
-# del master taint
-kubectl taint nodes --all node-role.kubernetes.io/master-
+# install metrics server
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
+
+# install dashboard
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
+kubectl describe secret admin-user --namespace=kube-system
