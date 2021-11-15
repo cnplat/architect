@@ -841,7 +841,7 @@ spec:
                       info configuration.
                     properties:
                       issuer:
-                        description: TLSCLientCertificateDNInfo holds the client TLS
+                        description: TLSClientCertificateDNInfo holds the client TLS
                           certificate distinguished name info configuration. cf https://tools.ietf.org/html/rfc3739
                         properties:
                           commonName:
@@ -868,7 +868,7 @@ spec:
                       serialNumber:
                         type: boolean
                       subject:
-                        description: TLSCLientCertificateDNInfo holds the client TLS
+                        description: TLSClientCertificateDNInfo holds the client TLS
                           certificate distinguished name info configuration. cf https://tools.ietf.org/html/rfc3739
                         properties:
                           commonName:
@@ -1227,6 +1227,7 @@ spec:
                     enum:
                     - NoClientCert
                     - RequestClientCert
+                    - RequireAnyClientCert
                     - VerifyClientCertIfGiven
                     - RequireAndVerifyClientCert
                     type: string
