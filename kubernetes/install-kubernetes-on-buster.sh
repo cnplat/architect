@@ -63,9 +63,12 @@ kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation
 kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
 
 # install metallb
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/namespace.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/metallb.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/config.yaml
+# kubectl get configmap kube-proxy -n kube-system -o yaml | \
+# sed -e "s/strictARP: false/strictARP: true/" | \
+# kubectl apply -f - -n kube-system
+# kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/namespace.yaml
+# kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/metallb.yaml
+# kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/config.yaml
 
 # install dashboard
 kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
