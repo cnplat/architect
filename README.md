@@ -37,13 +37,13 @@ kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation
 
 ## 安装 traefik
 ```shell
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/1.traefik-crd.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/2.traefik-rbac.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/3.0.traefik-ingress-controller.yml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/1.traefik-crd.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/2.traefik-rbac.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
 sleep 1
-kubectl delete -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/3.0.traefik-ingress-controller.yml
+kubectl delete -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
 sleep 1
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/3.1.traefik-ingress-controller.yml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.1.traefik-ingress-controller.yml
 ```
 
 ## 安装 metallb
