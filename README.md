@@ -82,7 +82,7 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kube
 kubectl describe secret admin-user --namespace=kube-system
 ```
 
-# 安装 mysql
+## 安装 mysql
 
 https://github.com/bitpoke/mysql-operator
 
