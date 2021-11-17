@@ -1,6 +1,8 @@
-# 离线安装K3S
+# K3S
 
-## 下载离线文件
+## 离线安装
+
+### 下载离线文件
 
 下载您要安装版本的离线文件，放入 `offline` 文件件
 
@@ -13,7 +15,7 @@
     └── k3s-airgap-images-amd64.tar  # k3s离线镜像包
 ```
 
-## Master节点
+### Master节点
 
 ```shell
 # 执行 master.sh
@@ -24,7 +26,8 @@ bash master.sh
 export K3S_TOKEN=xxx
 export K3S_URL=https://10.0.0.10:6443
 ```
-## Node节点
+
+### Node节点
 
 ```shell
 # 先执行master节点安装输出信息
@@ -32,4 +35,13 @@ export K3S_TOKEN=xxx
 export K3S_URL=https://10.0.0.10:6443
 # 执行node.sh
 bash node.sh
+```
+
+## 卸载
+
+``` shell
+# Master节点
+/usr/local/bin/k3s-uninstall.sh 
+# Node节点
+/usr/local/bin/k3s-agent-uninstall.sh
 ```
