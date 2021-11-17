@@ -78,6 +78,16 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/mysq
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/mysql/dev-cluster.yaml
 ```
 
+# 安装 redis
+
+```shell
+kubectl create namespace redis
+helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
+helm upgrade redis-operator ot-helm/redis-operator --install --namespace redis
+kubectl create secret generic redis-secret --from-literal=password=password -n redis
+helm upgrade dev-redis ot-helm/redis --install --namespace redis
+```
+
 ## 安装 kube-prometheus
 
 ```
