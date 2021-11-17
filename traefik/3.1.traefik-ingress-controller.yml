@@ -30,6 +30,7 @@ spec:
             - --api.insecure
             - --entrypoints.web.address=:80
             - --entrypoints.websecure.address=:443
+            - --entrypoints.metrics.address=:8002
             # - --entrypoints.tcpep.address=:8000
             # - --entrypoints.udpep.address=:9000/udp
             - --providers.kubernetescrd
@@ -62,6 +63,8 @@ spec:
               containerPort: 80
             - name: websecure
               containerPort: 443
+            - name: metrics
+              containerPort: 8002
             - name: admin
               containerPort: 8080
             # - name: tcpep
@@ -87,6 +90,10 @@ spec:
       port: 443
       name: websecure
       targetPort: 443
+    - protocol: TCP
+      port: 8002
+      name: metrics
+      targetPort: 8002
     - protocol: TCP
       port: 8080
       name: admin
