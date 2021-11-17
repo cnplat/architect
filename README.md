@@ -46,7 +46,7 @@ sleep 1
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/3.1.traefik-ingress-controller.yml
 ```
 
-# 安装 metallb
+## 安装 metallb
 ```
 kubectl get configmap kube-proxy -n kube-system -o yaml | \
 sed -e "s/strictARP: false/strictARP: true/" | \
