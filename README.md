@@ -68,6 +68,17 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kube
 kubectl describe secret admin-user --namespace=kube-system
 ```
 
+
+## 安装 kube-prometheus
+
+```
+# 创建命名空间和CRD
+kubectl create -f kube-prometheus/manifests/setup
+# 等待命令空间和CRD资源可用后再执行
+kubectl create -f kube-prometheus/manifests/
+```
+
+
 ## 安装 jaeger-operator
 ```
 kubectl create namespace observability
