@@ -44,10 +44,10 @@ spec:
             - --metrics.prometheus.addrouterslabels=true
             # 启用 Jaeger
             - --tracing.jaeger=true
-            - --tracing.jaeger.samplingServerURL=http://jaeger:5778/sampling
+            - --tracing.jaeger.samplingServerURL=http://simplest-agent.observability:5778/sampling
             - --tracing.jaeger.samplingType=const
             - --tracing.jaeger.samplingParam=1.0
-            - --tracing.jaeger.localAgentHostPort=jaeger:6831
+            - --tracing.jaeger.localAgentHostPort=simplest-agent.observability:6831
             - --tracing.jaeger.gen128Bit
             - --tracing.jaeger.propagation=jaeger
             - --tracing.jaeger.disableAttemptReconnecting=true
@@ -91,10 +91,6 @@ spec:
       name: websecure
       targetPort: 443
     - protocol: TCP
-      port: 8002
-      name: metrics
-      targetPort: 8002
-    - protocol: TCP
       port: 8080
       name: admin
       targetPort: 8080
@@ -102,6 +98,20 @@ spec:
     #   port: 8000
     #   name: tcpep
     #   targetPort: 8000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-metrics
+spec:
+  selector:
+    app: traefik
+  ports:
+    - protocol: TCP
+      port: 8002
+      name: metrics
+      targetPort: 8002
 
 # ---
 # apiVersion: v1
