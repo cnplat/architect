@@ -1,19 +1,8 @@
 
-## 安装 traefik
+## traefik
 ```shell
-# 添加 traefik repo
-helm repo add traefik https://helm.traefik.io/traefik
-# 刷新 helm repo
-helm repo update
-# 创建命名空间
-kubectl create ns traefik-system
 # 安装
-helm install --namespace=traefik-system \
-    --set="additionalArguments={--log.level=DEBUG}" \
-    traefik traefik/traefik
-helm install --namespace=traefik-system \
-    --set="additionalArguments={--log.level=DEBUG}" \
-    traefik-internal traefik/traefik
+curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/traefik.sh | bash - 
 # 卸载
-helm uninstall traefik
+curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/traefik/traefik-uninstall.sh | bash - 
 ```

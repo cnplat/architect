@@ -8,11 +8,11 @@
 ```
 # On master 自动初始化
 apt update -y && apt upgrade -y && apt install curl -y && apt autoremove -y
-curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubernetes-on-buster.sh | bash - 
+curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/install-kubernetes-on-buster.sh | bash - 
 
 # On node 需手动jion
 apt update -y && apt upgrade -y && apt install curl -y && apt autoremove -y
-curl -fsSL https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/install-kubeadm-on-buster.sh | bash - 
+curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/install-kubeadm-on-buster.sh | bash - 
 ```
 
 ### 手动初始化
@@ -40,19 +40,19 @@ kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation
 kubectl get configmap kube-proxy -n kube-system -o yaml | \
 sed -e "s/strictARP: false/strictARP: true/" | \
 kubectl apply -f - -n kube-system
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/namespace.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/metallb.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/metallb/config.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/metallb/namespace.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/metallb/metallb.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/metallb/config.yaml
 ```
 
 ## 安装 metrics server
 ```
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
 ```
 
 ## 安装 kubernetes dashboard
 ```
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/DevOps/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
+kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
 kubectl describe secret admin-user --namespace=kube-system
 ```
