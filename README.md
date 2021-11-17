@@ -5,6 +5,7 @@
 ## 搭建
 
 ### Debian10 安装kubernetes
+
 ```
 # On master 自动初始化
 apt update -y && apt upgrade -y && apt install curl -y && apt autoremove -y
@@ -16,6 +17,7 @@ curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes
 ```
 
 ### 手动初始化
+
 ```
 # initialize kubernetes with a Flannel compatible pod network CIDR
 kubeadm init --apiserver-advertise-address=0.0.0.0 \
@@ -36,6 +38,9 @@ kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation
 ```
 
 ## 安装 traefik
+
+https://github.com/traefik/traefik
+
 ```shell
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/1.traefik-crd.yaml
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/2.traefik-rbac.yaml
@@ -47,6 +52,9 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/trae
 ```
 
 ## 安装 metallb
+
+https://github.com/metallb/metallb
+
 ```
 kubectl get configmap kube-proxy -n kube-system -o yaml | \
 sed -e "s/strictARP: false/strictARP: true/" | \
@@ -57,11 +65,17 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kube
 ```
 
 ## 安装 metrics server
+
+https://github.com/kubernetes-sigs/metrics-server
+
 ```
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
 ```
 
 ## 安装 kubernetes dashboard
+
+https://github.com/kubernetes/dashboard
+
 ```
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
@@ -69,6 +83,8 @@ kubectl describe secret admin-user --namespace=kube-system
 ```
 
 # 安装 mysql
+
+https://github.com/bitpoke/mysql-operator
 
 ```shell
 kubectl create namespace mysql
@@ -78,7 +94,9 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/mysq
 kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/mysql/dev-cluster.yaml
 ```
 
-# 安装 redis
+## 安装 redis
+
+https://github.com/OT-CONTAINER-KIT/redis-operator
 
 ```shell
 kubectl create namespace redis
@@ -90,6 +108,8 @@ helm upgrade dev-redis ot-helm/redis --install --namespace redis
 
 ## 安装 kube-prometheus
 
+https://github.com/prometheus-operator/kube-prometheus
+
 ```
 # 创建命名空间和CRD
 kubectl create -f kube-prometheus/manifests/setup
@@ -98,6 +118,9 @@ kubectl create -f kube-prometheus/manifests/
 ```
 
 ## 安装 jaeger-operator
+
+https://github.com/jaegertracing/jaeger-operator
+
 ```
 kubectl create namespace observability
 kubectl create -n observability -f https://raw.fastgit.org/jaegertracing/jaeger-operator/master/deploy/crds/jaegertracing.io_jaegers_crd.yaml
