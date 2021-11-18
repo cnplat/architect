@@ -812,7 +812,7 @@ spec:
   - name: web
     port: 2746
     targetPort: 2746
-    nodePort: 30846
+    nodePort: 30811
   selector:
     app: argo-server
 ---
