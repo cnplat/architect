@@ -26,12 +26,8 @@ nowip=`curl -s www.123cha.com |grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}
 export INSTALL_K3S_SKIP_DOWNLOAD=true
 export K3S_NODE_IP=${localip}
 export K3S_EXTERNAL_IP=${nowip}
-export INSTALL_K3S_EXEC="server --docker --cluster-init --write-kubeconfig ~/.kube/config --write-kubeconfig-mode 666 --tls-san $K3S_NODE_IP --node-ip $K3S_NODE_IP --node-external-ip $K3S_EXTERNAL_IP --kube-apiserver-arg service-node-port-range=1-65000 --kube-apiserver-arg advertise-address=$K3S_NODE_IP --kube-apiserver-arg external-hostname=$K3S_NODE_IP --disable traefik"
+export K3S_NODE_NAME=${HOSTNAME//_/-}
+export INSTALL_K3S_EXEC="server --docker --token $K3S_TOKEN --server $K3S_URL --node-ip $K3S_NODE_IP --node-external-ip $K3S_EXTERNAL_IP"
 
 bash ./offline/install.sh
 
-# 输出node
-echo "First execute the following commands on other nodes."
-echo -e "\nexport K3S_TOKEN=$(cat /var/lib/rancher/k3s/server/node-token)\nexport K3S_URL=https://$K3S_NODE_IP:6443\n"
-echo -e "HA Master Node run 'bash masterha.sh'."
-echo -e "Worker Node run 'bash node.sh'."

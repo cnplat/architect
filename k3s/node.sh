@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+if ! type curl >/dev/null 2>&1; then
+    apt update -y && apt install curl -y && apt autoremove
+fi
+
 # 安装 docker
 curl -fsSL https://get.docker.com | bash
 cat <<EOF | tee /etc/docker/daemon.json
@@ -22,7 +26,6 @@ nowip=`curl -s www.123cha.com |grep -o "[0-9]\{1,3\}\.[0-9]\{1,3\}\.[0-9]\{1,3\}
 export INSTALL_K3S_SKIP_DOWNLOAD=true
 export K3S_NODE_IP=${localip}
 export K3S_EXTERNAL_IP=${nowip}
-export K3S_NODE_NAME=${HOSTNAME//_/-}
-export INSTALL_K3S_EXEC="--docker --token $K3S_TOKEN --server $K3S_URL --node-ip $K3S_NODE_IP --node-external-ip $K3S_EXTERNAL_IP"
+export INSTALL_K3S_EXEC="agent --docker --token $K3S_TOKEN --server $K3S_URL --node-ip $K3S_NODE_IP --node-external-ip $K3S_EXTERNAL_IP"
 
 bash ./offline/install.sh
