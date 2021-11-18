@@ -148,8 +148,8 @@ kubectl create -n observability -f https://raw.fastgit.org/jaegertracing/jaeger-
 kubectl create -n observability -f https://raw.fastgit.org/jaegertracing/jaeger-operator/master/deploy/role_binding.yaml
 kubectl create -n observability -f https://raw.fastgit.org/jaegertracing/jaeger-operator/master/deploy/operator.yaml
 
-kubectl create -f https://raw.fastgit.org/jaegertracing/jaeger-operator/master/deploy/cluster_role.yaml
-kubectl create -f https://raw.fastgit.org/jaegertracing/jaeger-operator/master/deploy/cluster_role_binding.yaml
+kubectl create -n observability -f https://raw.fastgit.org/jaegertracing/jaeger-operator/master/deploy/cluster_role.yaml
+kubectl create -n observability -f https://raw.fastgit.org/jaegertracing/jaeger-operator/master/deploy/cluster_role_binding.yaml
 
 kubectl apply -n observability -f - <<EOF
 apiVersion: jaegertracing.io/v1
