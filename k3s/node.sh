@@ -2,7 +2,7 @@
 set -e
 
 if ! type curl >/dev/null 2>&1; then
-    apt update -y && apt install curl -y && apt autoremove
+    apt update -y && apt install curl -y && apt autoremove -y
 fi
 
 # 安装 docker
