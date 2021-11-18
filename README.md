@@ -42,13 +42,15 @@ kubectl apply -f https://raw.fastgit.org/flannel-io/flannel/master/Documentation
 https://github.com/traefik/traefik
 
 ```shell
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/1.traefik-crd.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/2.traefik-rbac.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
+
+kubectl create ns traefik
+kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/1.traefik-crd.yaml
+kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/2.traefik-rbac.yaml
+kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
 sleep 1
-kubectl delete -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
+kubectl delete -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
 sleep 1
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.1.traefik-ingress-controller.yml
+kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.1.traefik-ingress-controller.yml
 ```
 
 ## 安装 metallb
@@ -104,6 +106,16 @@ helm repo add ot-helm https://ot-container-kit.github.io/helm-charts/
 helm upgrade redis-operator ot-helm/redis-operator --install --namespace redis
 kubectl create secret generic redis-secret --from-literal=password=password -n redis
 helm upgrade dev-redis ot-helm/redis --install --namespace redis
+```
+
+## 安装 argo
+
+https://github.com/argoproj/argo-workflows
+
+```
+kubectl create ns argo
+kubectl apply -n argo -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/argo/argo.yaml
+# Visit: https://<your server ip>:30846/
 ```
 
 ## 安装 kube-prometheus
