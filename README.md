@@ -110,12 +110,15 @@ helm upgrade dev-redis ot-helm/redis --install --namespace redis
 
 ## 安装 argo-workflows
 
+https://github.com/argoproj/argo-cd
 https://github.com/argoproj/argo-workflows
 
-```
+```shell
 kubectl create ns argo
+kubectl apply -n argo -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/argo/cd.yaml
 kubectl apply -n argo -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/argo/workflow.yaml
-# Visit: https://<your server ip>:30846/
+# Visit cd: https://<your server ip>:30810/
+# Visit workflow: https://<your server ip>:30846/
 ```
 
 ## 安装 kube-prometheus
