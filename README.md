@@ -108,7 +108,7 @@ kubectl create secret generic redis-secret --from-literal=password=password -n r
 helm upgrade dev-redis ot-helm/redis --install --namespace redis
 ```
 
-## 安装 argo-workflows
+## 安装 argo
 
 https://github.com/argoproj/argo-cd
 https://github.com/argoproj/argo-workflows
