@@ -1,4 +1,4 @@
-#!/bin/bash
+cnplat/architectcnplat/architect#!/bin/bash
 set -e;
 
 kubectl delete -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/1.traefik-crd.yaml

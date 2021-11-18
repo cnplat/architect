@@ -1,4 +1,4 @@
-# 安装 mysql
+cnplat/architectcnplat/architect# 安装 mysql
 
 ```shell
 kubectl create namespace mysql

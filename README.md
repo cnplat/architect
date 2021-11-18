@@ -1,4 +1,4 @@
-# CloudNativeArchitect
+cnplat/architectcnplat/architect# CloudNativeArchitect
 
 > 致力于设计快速/灵活的云原生架构设计及搭建。
 
@@ -9,11 +9,11 @@
 ```
 # On master 自动初始化
 apt update -y && apt upgrade -y && apt install curl -y && apt autoremove -y
-curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/install-kubernetes-on-buster.sh | bash - 
+curl -fsSL https://raw.fastgit.org/cnplat/architect/main/kubernetes/install-kubernetes-on-buster.sh | bash - 
 
 # On node 需手动jion
 apt update -y && apt upgrade -y && apt install curl -y && apt autoremove -y
-curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/install-kubeadm-on-buster.sh | bash - 
+curl -fsSL https://raw.fastgit.org/cnplat/architect/main/kubernetes/install-kubeadm-on-buster.sh | bash - 
 ```
 
 ### 手动初始化
@@ -44,13 +44,13 @@ https://github.com/traefik/traefik
 ```shell
 
 kubectl create ns traefik
-kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/1.traefik-crd.yaml
-kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/2.traefik-rbac.yaml
-kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
+kubectl apply -n traefik -f https://raw.fastgit.org/cnplat/architect/main/traefik/1.traefik-crd.yaml
+kubectl apply -n traefik -f https://raw.fastgit.org/cnplat/architect/main/traefik/2.traefik-rbac.yaml
+kubectl apply -n traefik -f https://raw.fastgit.org/cnplat/architect/main/traefik/3.0.traefik-ingress-controller.yml
 sleep 1
-kubectl delete -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.0.traefik-ingress-controller.yml
+kubectl delete -n traefik -f https://raw.fastgit.org/cnplat/architect/main/traefik/3.0.traefik-ingress-controller.yml
 sleep 1
-kubectl apply -n traefik -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/3.1.traefik-ingress-controller.yml
+kubectl apply -n traefik -f https://raw.fastgit.org/cnplat/architect/main/traefik/3.1.traefik-ingress-controller.yml
 ```
 
 ## 安装 metallb
@@ -61,9 +61,9 @@ https://github.com/metallb/metallb
 kubectl get configmap kube-proxy -n kube-system -o yaml | \
 sed -e "s/strictARP: false/strictARP: true/" | \
 kubectl apply -f - -n kube-system
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/metallb/namespace.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/metallb/metallb.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/metallb/config.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/metallb/namespace.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/metallb/metallb.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/metallb/config.yaml
 ```
 
 ## 安装 metrics server
@@ -71,7 +71,7 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kube
 https://github.com/kubernetes-sigs/metrics-server
 
 ```
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
 ```
 
 ## 安装 kubernetes dashboard
@@ -79,8 +79,8 @@ kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kube
 https://github.com/kubernetes/dashboard
 
 ```
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
 kubectl describe secret admin-user --namespace=kube-system
 ```
 
@@ -92,8 +92,8 @@ https://github.com/bitpoke/mysql-operator
 kubectl create namespace mysql
 helm repo add bitpoke https://helm-charts.bitpoke.io
 helm install mysql bitpoke/mysql-operator -n=mysql
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/mysql/dev-secret.yaml
-kubectl apply -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/mysql/dev-cluster.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/mysql/dev-secret.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/mysql/dev-cluster.yaml
 ```
 
 ## 安装 redis
@@ -115,13 +115,13 @@ https://github.com/argoproj/argo-workflows
 
 ```shell
 kubectl create ns argocd
-kubectl apply -n argocd -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/argo/cd.yaml
+kubectl apply -n argocd -f https://raw.fastgit.org/cnplat/architect/main/argo/cd.yaml
 # 获取argo-cd admin密码
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 # Visit cd: https://<your server ip>:30810/
 
 kubectl create ns argo
-kubectl apply -n argo -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/argo/workflow.yaml
+kubectl apply -n argo -f https://raw.fastgit.org/cnplat/architect/main/argo/workflow.yaml
 # Visit workflow: https://<your server ip>:30811/
 ```
 
