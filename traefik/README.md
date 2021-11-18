@@ -2,7 +2,7 @@ cnplat/architectcnplat/architect
 ## traefik
 ```shell
 # 安装
-curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/traefik.sh | bash - 
+curl -fsSL https://raw.fastgit.org/cnplat/architect/main/traefik/traefik.sh | bash - 
 # 卸载
-curl -fsSL https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/traefik/traefik-uninstall.sh | bash - 
+curl -fsSL https://raw.fastgit.org/cnplat/architect/main/traefik/traefik-uninstall.sh | bash - 
 ```

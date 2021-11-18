@@ -1,4 +1,4 @@
-cnplat/architectcnplat/architect# CloudNativeArchitect
+# CloudNativeArchitect
 
 > 致力于设计快速/灵活的云原生架构设计及搭建。
 
