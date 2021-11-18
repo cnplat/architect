@@ -23,6 +23,6 @@ export INSTALL_K3S_SKIP_DOWNLOAD=true
 export K3S_NODE_IP=${localip}
 export K3S_EXTERNAL_IP=${nowip}
 export K3S_NODE_NAME=${HOSTNAME//_/-}
-export INSTALL_K3S_EXEC="--docker --token $K3S_TOKEN --server $K3S_URL --node-external-ip $K3S_EXTERNAL_IP"
+export INSTALL_K3S_EXEC="--docker --token $K3S_TOKEN --server $K3S_URL --node-ip $K3S_NODE_IP --node-external-ip $K3S_EXTERNAL_IP"
 
 bash ./offline/install.sh
