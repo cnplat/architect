@@ -108,13 +108,13 @@ kubectl create secret generic redis-secret --from-literal=password=password -n r
 helm upgrade dev-redis ot-helm/redis --install --namespace redis
 ```
 
-## 安装 argo
+## 安装 argo-workflows
 
 https://github.com/argoproj/argo-workflows
 
 ```
 kubectl create ns argo
-kubectl apply -n argo -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/argo/argo.yaml
+kubectl apply -n argo -f https://raw.fastgit.org/cnbattle/CloudNativeArchitect/main/argo/workflow.yaml
 # Visit: https://<your server ip>:30846/
 ```
 
