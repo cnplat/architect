@@ -2,7 +2,7 @@
 set -e
 
 # 安装 docker
-curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
+curl -fsSL https://get.docker.com | bash
 cat <<EOF | sudo tee /etc/docker/daemon.json
 {
   "registry-mirrors": ["https://n3kgoynn.mirror.aliyuncs.com"]
@@ -28,5 +28,5 @@ export INSTALL_K3S_EXEC="--docker --cluster-init --write-kubeconfig ~/.kube/conf
 bash ./offline/install.sh
 
 # 输出node
-echo "先在node执行下列命令，然后再执行'node.sh'"
+echo "先在node执行下列命令，然后再执行'bash node.sh'"
 echo -e "\nexport K3S_TOKEN=$(cat /var/lib/rancher/k3s/server/node-token)\nexport K3S_URL=https://$K3S_NODE_IP:6443\n"

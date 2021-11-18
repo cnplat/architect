@@ -2,8 +2,8 @@
 set -e
 
 # 安装 docker
-curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun
-cat <<EOF | sudo tee /etc/docker/daemon.json
+curl -fsSL https://get.docker.com | bash
+cat <<EOF | tee /etc/docker/daemon.json
 {
   "registry-mirrors": ["https://n3kgoynn.mirror.aliyuncs.com"]
 }
