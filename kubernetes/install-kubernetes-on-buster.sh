@@ -1,4 +1,4 @@
-cnplat/architectcnplat/architect#!/bin/bash
+#!/bin/bash
 set -e;
 
 # Set up a single-node Kubernetes system on Debian 10 (Buster).
