@@ -78,10 +78,12 @@ kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/kubern
 
 https://github.com/kubernetes/dashboard
 
-```
-kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/kubernetes-dashboard/kubernetes-dashboard.yaml
-kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes/kubernetes-dashboard/dashboard-adminuser.yaml
+```shell
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes-dashboard/kubernetes-dashboard.yaml
+kubectl apply -f https://raw.fastgit.org/cnplat/architect/main/kubernetes-dashboard/dashboard-adminuser.yaml
+# 获取登录token
 kubectl describe secret admin-user --namespace=kube-system
+# Visit: https://<your server ip>:30801/
 ```
 
 ## 安装 mysql
