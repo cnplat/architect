@@ -1,4 +1,4 @@
-cnplat/architectcnplat/architect# argo-traefik
+# argo-traefik
 
 ```shell
 # use github
