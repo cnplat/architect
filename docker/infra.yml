@@ -15,9 +15,15 @@ services:
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
-      - "0.0.0.0:8080:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik${DOMAIN}`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.entrypoints=web"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - infra
 
   mysql:
     image: mysql:5.7
@@ -35,21 +41,25 @@ services:
       --collation-server=utf8mb4_unicode_ci
     ports:
       - "0.0.0.0:3306:3306"
+    networks:
+      - infra
 
   adminer:
     image: adminer
     restart: always
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.adminer.rule=Host(`adminer-192-168-33-10.nip.io`)"
-    #   - "traefik.http.services.adminer.loadbalancer.server.port=8080"
-    #   - "traefik.http.routers.adminer.entrypoints=web"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer${DOMAIN}`)"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+      - "traefik.http.routers.adminer.entrypoints=web"
     links:
       - mysql
     depends_on:
       - mysql
     ports:
       - "0.0.0.0:18080:8080"
+    networks:
+      - infra
 
   mongo:
     image: mongo
@@ -62,6 +72,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: 123456
+    networks:
+      - infra
 
   mongo-express:
     image: mongo-express
@@ -77,6 +89,8 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
       ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
       ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+    networks:
+      - infra
 
   redis:
     image: redis
@@ -85,6 +99,8 @@ services:
       - "0.0.0.0:6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - infra
 
   rediscommander:
     image: rediscommander/redis-commander:latest
@@ -95,6 +111,8 @@ services:
       - REDIS_HOSTS=local:redis:6379
     ports:
       - "0.0.0.0:18081:8081"
+    networks:
+      - infra
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -108,6 +126,8 @@ services:
       - "0.0.0.0:5672:5672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - infra
 
   nsqlookupd:
     image: nsqio/nsq:v1.2.1
@@ -116,6 +136,8 @@ services:
     ports:
       - "0.0.0.0:4160:4160"
       - "0.0.0.0:4161:4161"
+    networks:
+      - infra
 
   nsqd:
     image: nsqio/nsq:v1.2.1
@@ -128,6 +150,8 @@ services:
     ports:
       - "0.0.0.0:4150:4150"
       - "0.0.0.0:4151:4151"
+    networks:
+      - infra
   
   nsqadmin:
     image: nsqio/nsq:v1.2.1
@@ -137,6 +161,8 @@ services:
       - nsqlookupd
     ports:
       - "0.0.0.0:4171:4171"
+    networks:
+      - infra
 
 volumes:
   mysql_data:
@@ -145,3 +171,6 @@ volumes:
   redis_data:
   rabbitmq_data:
   nsq_data:
+
+networks:
+  infra:
