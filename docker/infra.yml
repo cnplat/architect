@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v2.5
+    image: traefik:v2.6
     restart: always
     command: 
       - --api.insecure=true
@@ -27,7 +27,7 @@ services:
       - infra
 
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     restart: always
     volumes:
       - mysql_data:/var/lib/mysql/
@@ -63,7 +63,7 @@ services:
       - infra
 
   mongo:
-    image: mongo
+    image: mongo:5.0
     restart: always
     volumes:
       - "mongo_data:/data/db"
@@ -94,7 +94,7 @@ services:
       - infra
 
   redis:
-    image: redis
+    image: redis:6.2
     restart: always
     ports:
       - "0.0.0.0:6379:6379"
@@ -167,7 +167,7 @@ services:
 
   clickhouse:
     container_name: clickhouse
-    image: yandex/clickhouse-server
+    image: yandex/clickhouse-server:21.3
     volumes:
       - clickhouse_data:/var/lib/clickhouse
     ports:
@@ -189,7 +189,7 @@ services:
       - infra
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.16.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.1
     container_name: elasticsearch
     environment:
       - xpack.security.enabled=false
