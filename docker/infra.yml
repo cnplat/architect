@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v2.6
+    image: traefik:v2.7
     restart: always
     command: 
       - --api.insecure=true
@@ -12,16 +12,31 @@ services:
       - --providers.docker.exposedByDefault=false
       - --entryPoints.web.address=:80
       - --entryPoints.websecure.address=:443
+      - --certificatesresolvers.myresolver.acme.email=traefik@cnbattle.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      - --log.level=DEBUG
     ports:
-      - "0.0.0.0:80:80"
-      - "0.0.0.0:443:443"
-      - "0.0.0.0:8080:8080"
-    # labels:
-    #   - "traefik.enable=true"
-    #   - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"
-    #   - "traefik.http.services.traefik.loadbalancer.server.port=8080"
-    #   - "traefik.http.routers.traefik.entrypoints=web"
+      - "80:80"
+      - "443:443"
+    labels:
+
+      - "traefik.http.middlewares.cnbattle-auth.basicauth.users=cnbattle:$$apr1$$kft8mcp2$$x0xzpLaJbTA6PuERAPkGu1"
+      - "traefik.http.middlewares.dev-auth.basicauth.users=dev:$$apr1$$0mdgj2tf$$0rTvSJnC8z01c5xLQypHk0"
+      
+      - "traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Origin=*"
+      - "traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Methods=*"
+      - "traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Headers=*"
+      
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik.middlewares=cnbattle-auth"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=myresolver"
     volumes:
+      - trarfik_letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - infra
@@ -32,33 +47,37 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql/
     environment:
-      MYSQL_ROOT_PASSWORD: 123456
-      MYSQL_DATABASE: dev
-      MYSQL_USER: dev
-      MYSQL_PASSWORD: dev
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "dev"
+      MYSQL_USER: "dev"
+      MYSQL_PASSWORD: "123456"
     command: >
       mysqld
+      --skip-log-bin
+      --disable-log-bin
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
     ports:
-      - "0.0.0.0:3306:3306"
+      - "0.0.0.0:30901:3306"
     networks:
       - infra
 
-  adminer:
-    image: adminer
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2.0
     restart: always
+    environment:
+      PMA_ARBITRARY: 1
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.adminer.rule=Host(`adminer.${DOMAIN}`)"
-      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
-      - "traefik.http.routers.adminer.entrypoints=web"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`phpmyadmin.${DOMAIN}`)"
+      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
+      - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
+      - "traefik.http.routers.phpmyadmin.tls=true"
+      - "traefik.http.routers.phpmyadmin.tls.certresolver=myresolver"
     links:
       - mysql
     depends_on:
       - mysql
-    ports:
-      - "0.0.0.0:18080:8080"
     networks:
       - infra
 
@@ -69,10 +88,10 @@ services:
       - "mongo_data:/data/db"
       - "mongo_configdb:/data/configdb"
     ports:
-      - "0.0.0.0:27017:27017"
+      - "0.0.0.0:30902:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_ROOT_PASSWORD: "123456"
     networks:
       - infra
 
@@ -83,12 +102,18 @@ services:
       - mongo
     links:
       - mongo
-    ports:
-      - "0.0.0.0:18082:8081"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.express.rule=Host(`express.${DOMAIN}`)"
+      - "traefik.http.services.express.loadbalancer.server.port=8081"
+      - "traefik.http.routers.express.entrypoints=websecure"
+      - "traefik.http.routers.express.tls=true"
+      - "traefik.http.routers.express.tls.certresolver=myresolver"
+      - "traefik.http.routers.express.middlewares=cnbattle-auth"
     environment:
       ME_CONFIG_MONGODB_SERVER: "mongo"
       ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
-      ME_CONFIG_MONGODB_ADMINPASSWORD: 123456
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "123456"
       ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
     networks:
       - infra
@@ -96,8 +121,10 @@ services:
   redis:
     image: redis:6.2
     restart: always
+    command: 
+      - --requirepass "123456"
     ports:
-      - "0.0.0.0:6379:6379"
+      - "0.0.0.0:30903:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -110,47 +137,53 @@ services:
       - redis
     environment:
       - REDIS_HOSTS=local:redis:6379
-    ports:
-      - "0.0.0.0:18081:8081"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rediscommander.rule=Host(`redis.${DOMAIN}`)"
+      - "traefik.http.services.rediscommander.loadbalancer.server.port=8081"
+      - "traefik.http.routers.rediscommander.entrypoints=websecure"
+      - "traefik.http.routers.rediscommander.tls=true"
+      - "traefik.http.routers.rediscommander.tls.certresolver=myresolver"
+      - "traefik.http.routers.rediscommander.middlewares=cnbattle-auth"
     networks:
       - infra
 
-  rabbitmq:
-    image: rabbitmq:3-management
+  showdoc:
+    image: star7th/showdoc:latest
     restart: always
-    environment:
-      DEFAULT_VHOST: "exchange_server"
-      DEFAULT_USER: "rabbit"
-      DEFAULT_PASS: "rabbit"
-    ports:
-      - "0.0.0.0:15672:15672"
-      - "0.0.0.0:5672:5672"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.showdoc.rule=Host(`doc.${DOMAIN}`)"
+      - "traefik.http.services.showdoc.loadbalancer.server.port=80"
+      - "traefik.http.routers.showdoc.entrypoints=websecure"
+      - "traefik.http.routers.showdoc.tls=true"
+      - "traefik.http.routers.showdoc.tls.certresolver=myresolver"
     volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
+      - showdoc_data:/var/www/html
     networks:
       - infra
-
+  
   nsqlookupd:
     image: nsqio/nsq:v1.2.1
     restart: always
     command: /nsqlookupd
     ports:
-      - "0.0.0.0:4160:4160"
-      - "0.0.0.0:4161:4161"
+      - "0.0.0.0:30960:4160"
+      - "0.0.0.0:30961:4161"
     networks:
       - infra
-
+      
   nsqd:
     image: nsqio/nsq:v1.2.1
-    command: /nsqd --data-path=/data --mem-queue-size=0 --lookupd-tcp-address=nsqlookupd:4160
+    command: /nsqd --data-path=/data --mem-queue-size=1000 --lookupd-tcp-address=nsqlookupd:4160
     restart: always
-    depends_on:
-      - nsqlookupd
     volumes:
       - nsq_data:/data
+    depends_on:
+      - nsqlookupd
     ports:
-      - "0.0.0.0:4150:4150"
-      - "0.0.0.0:4151:4151"
+      - "0.0.0.0:30905:4150"
+      - "0.0.0.0:30906:4151"
     networks:
       - infra
   
@@ -159,67 +192,79 @@ services:
     restart: always
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
     depends_on:
+      - nsqd
       - nsqlookupd
-    ports:
-      - "0.0.0.0:4171:4171"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nsqadmin.rule=Host(`nsq.${DOMAIN}`)"
+      - "traefik.http.services.nsqadmin.loadbalancer.server.port=4171"
+      - "traefik.http.routers.nsqadmin.entrypoints=websecure"
+      - "traefik.http.routers.nsqadmin.tls=true"
+      - "traefik.http.routers.nsqadmin.tls.certresolver=myresolver"
+      - "traefik.http.routers.nsqadmin.middlewares=cnbattle-auth"
     networks:
       - infra
 
-  clickhouse:
-    container_name: clickhouse
-    image: yandex/clickhouse-server:21.3
-    volumes:
-      - clickhouse_data:/var/lib/clickhouse
-    ports:
-      - "0.0.0.0:8123:8123"
-      - "0.0.0.0:9000:9000"
-      - "0.0.0.0:9009:9009"
-      - "0.0.0.0:9004:9004"
-    ulimits:
-      nproc: 65535
-      nofile:
-        soft: 262144
-        hard: 262144
-    healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "localhost:8123/ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-    networks:
-      - infra
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.1.1
-    container_name: elasticsearch
+  zinc:
+    image: public.ecr.aws/zinclabs/zinc:0.2.3
     environment:
-      - xpack.security.enabled=false
-      - discovery.type=single-node
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    cap_add:
-      - IPC_LOCK
+      DATA_PATH: "/data"
+      FIRST_ADMIN_USER: "admin"
+      FIRST_ADMIN_PASSWORD: "123456"
+      ZINC_FIRST_ADMIN_USER: "admin"
+      ZINC_FIRST_ADMIN_PASSWORD: "123456"
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zinc.rule=Host(`zinc.${DOMAIN}`)"
+      - "traefik.http.services.zinc.loadbalancer.server.port=4080"
+      - "traefik.http.routers.zinc.entrypoints=websecure"
+      - "traefik.http.routers.zinc.tls=true"
+      - "traefik.http.routers.zinc.tls.certresolver=myresolver"
+      - "traefik.http.routers.zinc.middlewares=cors"
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
+      - zinc_data:/data
+    networks:
+      - infra
+
+  minio:
+    image: quay.io/minio/minio
+    command: server --console-address ":9001" /data
+    environment:
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "123456"
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`minio.${DOMAIN}`)"
+      - "traefik.http.routers.minio.service=minio"
+      - "traefik.http.services.minio.loadbalancer.server.port=9001"
+      - "traefik.http.routers.minio.entrypoints=websecure"
+      - "traefik.http.routers.minio.tls=true"
+      - "traefik.http.routers.minio.tls.certresolver=myresolver"
+      
+      - "traefik.http.routers.file.rule=Host(`file.${DOMAIN}`)"
+      - "traefik.http.routers.file.service=file"
+      - "traefik.http.services.file.loadbalancer.server.port=9000"
+      - "traefik.http.routers.file.entrypoints=websecure"
+      - "traefik.http.routers.file.tls=true"
+      - "traefik.http.routers.file.tls.certresolver=myresolver"
     ports:
-      - "0.0.0.0:9200:9200"
-      - "0.0.0.0:9300:9300"
+      - "0.0.0.0:30990:9000"
+    volumes:
+      - minio_data:/data
     networks:
       - infra
 
 volumes:
+  trarfik_letsencrypt:
+  minio_data:
+  zinc_data:
   mysql_data:
   mongo_data:
   mongo_configdb:
   redis_data:
-  rabbitmq_data:
-  nsq_data:
-  clickhouse_data:
-  elasticsearch_data:
+  nsq_data: 
 
 networks:
   infra:
