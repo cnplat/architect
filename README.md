@@ -81,6 +81,9 @@ https://github.com/kubernetes/dashboard
 ```shell
 kubectl apply -f https://github.com/cnplat/architect/raw/main/kubernetes-dashboard/kubernetes-dashboard.yaml
 kubectl apply -f https://github.com/cnplat/architect/raw/main/kubernetes-dashboard/dashboard-adminuser.yaml
+#kubectl apply -f https://gitee.com/cnplat/yaml/raw/main/kubernetes-dashboard/dashboard-adminuser.yaml
+#kubectl apply -f https://gitee.com/cnplat/yaml/raw/main/kubernetes-dashboard/dashboard-adminuser.yaml
+
 # 获取登录token
 kubectl describe secret admin-user --namespace=kube-system
 # Visit: https://<your server ip>:30801/
