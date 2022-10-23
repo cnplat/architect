@@ -71,7 +71,8 @@ kubectl apply -f https://github.com/cnplat/architect/raw/main/kubernetes/metallb
 https://github.com/kubernetes-sigs/metrics-server
 
 ```
-kubectl apply -f https://github.com/cnplat/architect/raw/main/kubernetes/kubernetes-dashboard/metrics-server.yaml
+kubectl apply -f https://github.com/cnplat/architect/raw/main/kubernetes-dashboard/metrics-server.yaml
+#kubectl apply -f https://gitee.com/cnplat/yaml/raw/main/kubernetes-dashboard/metrics-server.yaml
 ```
 
 ## 安装 kubernetes dashboard
