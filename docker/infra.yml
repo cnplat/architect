@@ -5,9 +5,14 @@ services:
     image: traefik:v2.7
     restart: always
     command: 
+      # 避免 Traefik 进行数据上报
+      - --global.sendanonymoususage=false
+      - --global.checknewversion=false
+      - --api.disableDashboardAd=true
+      
+      - --ping=true
       - --api.insecure=true
       - --api.dashboard=true
-      - --api.debug=true
       - --providers.docker
       - --providers.docker.exposedByDefault=false
       - --entryPoints.web.address=:80
@@ -15,7 +20,9 @@ services:
       - --certificatesresolvers.myresolver.acme.email=traefik@cnbattle.com
       - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
-      - --log.level=DEBUG
+      # 调试模式
+      # - --api.debug=true
+      # - --log.level=DEBUG
     ports:
       - "80:80"
       - "443:443"
@@ -38,6 +45,16 @@ services:
     volumes:
       - trarfik_letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock
+    # 健康检测
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy off localhost:8080/ping || exit 1"]
+      interval: 3s
+      retries: 10
+    # 防止容器日志过大
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
     networks:
       - infra
 
