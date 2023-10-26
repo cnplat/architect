@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   mongo:
-    image: mongo:4.4
+    image: mongo:7.0
     restart: always
     volumes:
       - "mongo_data:/data/db"
@@ -15,7 +15,7 @@ services:
       - infra
 
   mongo-express:
-    image: mongo-express:0.54
+    image: mongo-express:1.0
     restart: always
     deploy:
       replicas: 3

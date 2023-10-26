@@ -1,0 +1,109 @@
+version: '3.9'
+
+services:
+
+  mysql:
+    image: mysql:8.1
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "dev"
+      MYSQL_USER: "dev"
+      MYSQL_PASSWORD: "123456"
+    command: >
+      mysqld
+      --skip-log-bin
+      --disable-log-bin
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "0.0.0.0:30601:3306"
+    networks:
+      - infra
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    restart: always
+    environment:
+      PMA_ARBITRARY: 1
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.phpmyadmin.rule=Host(`phpmyadmin.${DOMAIN}`)"
+      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
+      - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
+      - "traefik.http.routers.phpmyadmin.tls=true"
+      - "traefik.http.routers.phpmyadmin.tls.certresolver=myresolver"
+    ports:
+      - "0.0.0.0:30901:3306"
+    links:
+      - mysql
+    depends_on:
+      - mysql
+    networks:
+      - infra
+
+  mongo:
+    image: mongo:7.0
+    restart: always
+    volumes:
+      - "mongo_data:/data/db"
+      - "mongo_configdb:/data/configdb"
+    ports:
+      - "0.0.0.0:30602:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: "123456"
+    networks:
+      - infra
+
+  mongo-express:
+    image: mongo-express:1.0
+    restart: always
+    ports:
+      - "0.0.0.0:30902:8081"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_SERVER: "mongo"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: "root"
+      ME_CONFIG_MONGODB_ADMINPASSWORD: "123456"
+      ME_CONFIG_OPTIONS_EDITORTHEME: "ambiance"
+    networks:
+      - infra
+
+  redis:
+    image: redis:7.2
+    restart: always
+    command: 
+      - --requirepass "123456"
+    ports:
+      - "0.0.0.0:30603:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - infra
+
+  rediscommander:
+    image: rediscommander/redis-commander:latest
+    restart: always
+    ports:
+      - "0.0.0.0:30903:8081"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    networks:
+      - infra
+
+volumes:
+  mysql_data:
+  mongo_data:
+  mongo_configdb:
+  redis_data:
+
+networks:
+  infra:

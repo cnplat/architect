@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v2.7
+    image: traefik:v2.10
     restart: always
     command: 
       # 避免 Traefik 进行数据上报
@@ -59,7 +59,7 @@ services:
       - infra
 
   mysql:
-    image: mysql:8.0
+    image: mysql:8.1
     restart: always
     volumes:
       - mysql_data:/var/lib/mysql/
@@ -75,7 +75,7 @@ services:
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
     ports:
-      - "0.0.0.0:30901:3306"
+      - "0.0.0.0:30601:3306"
     networks:
       - infra
 
@@ -98,7 +98,7 @@ services:
       - infra
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:5.2.0
+    image: phpmyadmin:5.2
     restart: always
     environment:
       PMA_ARBITRARY: 1
@@ -117,13 +117,13 @@ services:
       - infra
 
   mongo:
-    image: mongo:5.0
+    image: mongo:7.0
     restart: always
     volumes:
       - "mongo_data:/data/db"
       - "mongo_configdb:/data/configdb"
     ports:
-      - "0.0.0.0:30902:27017"
+      - "0.0.0.0:30602:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: "123456"
@@ -131,7 +131,7 @@ services:
       - infra
 
   mongo-express:
-    image: mongo-express
+    image: mongo-express:1.0
     restart: always
     depends_on:
       - mongo
@@ -154,12 +154,12 @@ services:
       - infra
 
   redis:
-    image: redis:6.2
+    image: redis:7.2
     restart: always
     command: 
       - --requirepass "123456"
     ports:
-      - "0.0.0.0:30903:6379"
+      - "0.0.0.0:30603:6379"
     volumes:
       - redis_data:/data
     networks:
@@ -203,8 +203,8 @@ services:
     restart: always
     command: /nsqlookupd
     ports:
-      - "0.0.0.0:30960:4160"
-      - "0.0.0.0:30961:4161"
+      - "0.0.0.0:30660:4160"
+      - "0.0.0.0:30661:4161"
     networks:
       - infra
       
@@ -217,8 +217,8 @@ services:
     depends_on:
       - nsqlookupd
     ports:
-      - "0.0.0.0:30905:4150"
-      - "0.0.0.0:30906:4151"
+      - "0.0.0.0:30605:4150"
+      - "0.0.0.0:30606:4151"
     networks:
       - infra
   
@@ -285,7 +285,7 @@ services:
       - "traefik.http.routers.file.tls=true"
       - "traefik.http.routers.file.tls.certresolver=myresolver"
     ports:
-      - "0.0.0.0:30990:9000"
+      - "0.0.0.0:30690:9000"
     volumes:
       - minio_data:/data
     networks:
