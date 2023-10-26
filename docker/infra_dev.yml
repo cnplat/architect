@@ -12,12 +12,19 @@ services:
       MYSQL_DATABASE: "dev"
       MYSQL_USER: "dev"
       MYSQL_PASSWORD: "123456"
-    command: >
-      mysqld
-      --skip-log-bin
-      --disable-log-bin
-      --character-set-server=utf8mb4
-      --collation-server=utf8mb4_unicode_ci
+    command: [
+      # 关闭二进制日志，主从 数据恢复功能将不可用, 与"--disable-log-bin"参数二选一
+      "--skip-log-bin", 
+      # 设置utf8字符集
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci",
+      # InnoDB 恢复 0正常启动，不强制恢复 1-6启用
+      "--innodb-force-recovery=0",
+      # 慢日志 x 秒
+      "--long-query-time=5",
+      "--slow-query-log=ON",
+      "--slow-query-log-file=/var/lib/mysql_log/mysql-slow.log",
+    ]
     ports:
       - "0.0.0.0:30601:3306"
     networks:
@@ -28,13 +35,6 @@ services:
     restart: always
     environment:
       PMA_ARBITRARY: 1
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.phpmyadmin.rule=Host(`phpmyadmin.${DOMAIN}`)"
-      - "traefik.http.services.phpmyadmin.loadbalancer.server.port=80"
-      - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
-      - "traefik.http.routers.phpmyadmin.tls=true"
-      - "traefik.http.routers.phpmyadmin.tls.certresolver=myresolver"
     ports:
       - "0.0.0.0:30901:3306"
     links:
