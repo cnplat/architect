@@ -174,7 +174,10 @@ services:
     depends_on:
       - redis
     environment:
-      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=root
+      - HTTP_PASSWORD=123456
+      # label:hostname:port:dbIndex:password
+      - REDIS_HOSTS=docker-redis:redis:6379:0:123456 
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rediscommander.rule=Host(`redis.${DOMAIN}`)"
