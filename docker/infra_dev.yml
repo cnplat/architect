@@ -37,8 +37,6 @@ services:
       PMA_ARBITRARY: 1
     ports:
       - "0.0.0.0:30901:3306"
-    links:
-      - mysql
     depends_on:
       - mysql
     networks:
@@ -64,8 +62,6 @@ services:
     ports:
       - "0.0.0.0:30902:8081"
     depends_on:
-      - mongo
-    links:
       - mongo
     environment:
       ME_CONFIG_MONGODB_SERVER: "mongo"

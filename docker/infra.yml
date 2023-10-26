@@ -116,8 +116,6 @@ services:
       - "traefik.http.routers.phpmyadmin.entrypoints=websecure"
       - "traefik.http.routers.phpmyadmin.tls=true"
       - "traefik.http.routers.phpmyadmin.tls.certresolver=myresolver"
-    links:
-      - mysql
     depends_on:
       - mysql
     networks:
@@ -141,8 +139,6 @@ services:
     image: mongo-express:1.0
     restart: always
     depends_on:
-      - mongo
-    links:
       - mongo
     labels:
       - "traefik.enable=true"
