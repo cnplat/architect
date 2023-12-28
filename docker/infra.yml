@@ -174,10 +174,10 @@ services:
     depends_on:
       - redis
     environment:
-      - HTTP_USER=root
-      - HTTP_PASSWORD=123456
+      HTTP_USER: root
+      HTTP_PASSWORD: 123456
       # label:hostname:port:dbIndex:password
-      - REDIS_HOSTS=docker-redis:redis:6379:0:123456 
+      REDIS_HOSTS: docker-redis:redis:6379:0:123456
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.rediscommander.rule=Host(`redis.${DOMAIN}`)"
@@ -205,7 +205,7 @@ services:
       - infra
   
   nsqlookupd:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     restart: always
     command: /nsqlookupd
     ports:
@@ -215,7 +215,7 @@ services:
       - infra
       
   nsqd:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     command: /nsqd --data-path=/data --mem-queue-size=1000 --lookupd-tcp-address=nsqlookupd:4160
     restart: always
     volumes:
@@ -229,7 +229,7 @@ services:
       - infra
   
   nsqadmin:
-    image: nsqio/nsq:v1.2.1
+    image: nsqio/nsq:v1.3.0
     restart: always
     command: /nsqadmin --lookupd-http-address=nsqlookupd:4161
     depends_on:
@@ -296,6 +296,19 @@ services:
       - minio_data:/data
     networks:
       - infra
+  
+  meilisearch:
+    image: getmeili/meilisearch:v1.5
+    restart: always
+    environment:
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: 123456
+    ports:
+      - "0.0.0.0:30607:7700"
+    volumes:
+      - meili_data:/meili_data
+    networks:
+      - infra
 
 volumes:
   trarfik_letsencrypt:
@@ -306,6 +319,7 @@ volumes:
   mongo_configdb:
   redis_data:
   nsq_data: 
+  meili_data:
 
 networks:
   infra:

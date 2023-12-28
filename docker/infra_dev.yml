@@ -91,10 +91,46 @@ services:
     depends_on:
       - redis
     environment:
-      - HTTP_USER=root
-      - HTTP_PASSWORD=123456
+      HTTP_USER: root
+      HTTP_PASSWORD: 123456
       # label:hostname:port:dbIndex:password
-      - REDIS_HOSTS=docker-redis:redis:6379:0:123456 
+      REDIS_HOSTS: docker-redis:redis:6379:0:123456
+    networks:
+      - infra
+    
+  nsqd:
+    image: nsqio/nsq:v1.3.0
+    command: /nsqd --data-path=/data --mem-queue-size=10000
+    restart: always
+    volumes:
+      - ./data/nsq_data:/data
+    ports:
+      - "0.0.0.0:30604:4150"
+      - "0.0.0.0:30605:4151"
+    networks:
+      - infra
+
+  nsqadmin:
+    image: nsqio/nsq:v1.3.0
+    restart: always
+    command: /nsqadmin --nsqd-http-address=nsqd:4151
+    ports:
+      - "0.0.0.0:30904:4171"
+    depends_on:
+      - nsqd
+    networks:
+      - infra
+  
+  meilisearch:
+    image: getmeili/meilisearch:v1.5
+    restart: always
+    environment:
+      MEILI_ENV: development
+      MEILI_MASTER_KEY: 123456
+    ports:
+      - "0.0.0.0:30607:7700"
+    volumes:
+      - ./data/meili_data:/meili_data
     networks:
       - infra
 
