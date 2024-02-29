@@ -9,14 +9,18 @@ services:
       "--global.sendanonymoususage=false",
       "--global.checknewversion=false",
       "--api.disableDashboardAd=true",
-      
       "--ping=true",
       "--api.insecure=true",
       "--api.dashboard=true",
+      "--accesslog=false",
+      # docker
       "--providers.docker",
       "--providers.docker.exposedByDefault=false",
+      "--providers.docker.network=infra",
+      # entry point
       "--entryPoints.web.address=:80",
       "--entryPoints.websecure.address=:443",
+      # letsencrypt 证书
       "--certificatesresolvers.myresolver.acme.email=traefik@cnbattle.com",
       "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json",
       "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web",

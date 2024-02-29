@@ -22,3 +22,7 @@ services:
 volumes:
   qbittorrent_config:
   qbittorrent_downloads:
+
+networks:
+  infra:
+    external: true

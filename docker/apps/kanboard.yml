@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+
+  kanboard:
+    image: kanboard/kanboard:latest
+    ports:
+      - "30921:80"
+    volumes:
+      - kanboard_data:/var/www/app/data
+      - kanboard_plugins:/var/www/app/plugins
+    restart: unless-stopped
+
+volumes:
+  kanboard_data:
+  kanboard_plugins:
+
+networks:
+  infra:
+    external: true
