@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=30920
+      - TORRENTING_PORT=30921
+    volumes:
+      - qbittorrent_config:/config
+      - qbittorrent_downloads:/downloads
+    ports:
+      - 30920:30920
+      - 30921:30921
+      - 30921:30921/udp
+    restart: unless-stopped
+
+volumes:
+  qbittorrent_config:
+  qbittorrent_downloads:

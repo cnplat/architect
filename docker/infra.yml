@@ -2,32 +2,32 @@ version: '3.9'
 
 services:
   traefik:
-    image: traefik:v2.10
+    image: traefik:v2.11
     restart: always
-    command: 
+    command: [
       # 避免 Traefik 进行数据上报
-      - --global.sendanonymoususage=false
-      - --global.checknewversion=false
-      - --api.disableDashboardAd=true
+      "--global.sendanonymoususage=false",
+      "--global.checknewversion=false",
+      "--api.disableDashboardAd=true",
       
-      - --ping=true
-      - --api.insecure=true
-      - --api.dashboard=true
-      - --providers.docker
-      - --providers.docker.exposedByDefault=false
-      - --entryPoints.web.address=:80
-      - --entryPoints.websecure.address=:443
-      - --certificatesresolvers.myresolver.acme.email=traefik@cnbattle.com
-      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
-      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      "--ping=true",
+      "--api.insecure=true",
+      "--api.dashboard=true",
+      "--providers.docker",
+      "--providers.docker.exposedByDefault=false",
+      "--entryPoints.web.address=:80",
+      "--entryPoints.websecure.address=:443",
+      "--certificatesresolvers.myresolver.acme.email=traefik@cnbattle.com",
+      "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json",
+      "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web",
       # 调试模式
-      # - --api.debug=true
-      # - --log.level=DEBUG
+      # "--api.debug=true",
+      # "--log.level=DEBUG",
+    ]
     ports:
       - "80:80"
       - "443:443"
     labels:
-
       - "traefik.http.middlewares.cnbattle-auth.basicauth.users=cnbattle:$$apr1$$kft8mcp2$$x0xzpLaJbTA6PuERAPkGu1"
       - "traefik.http.middlewares.dev-auth.basicauth.users=dev:$$apr1$$0mdgj2tf$$0rTvSJnC8z01c5xLQypHk0"
       
