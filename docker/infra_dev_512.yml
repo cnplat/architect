@@ -1,0 +1,238 @@
+version: '3'
+services:
+
+  traefik:
+    image: traefik:v3.3
+    mem_limit: 128m
+    restart: always
+    command: [
+      # 避免 Traefik 进行数据上报
+      "--global.sendanonymoususage=false",
+      "--global.checknewversion=false",
+      "--api.disableDashboardAd=true",
+      "--ping=true",
+      "--api.insecure=true",
+      "--api.dashboard=true",
+      "--accesslog=false",
+      # docker
+      "--providers.docker",
+      "--providers.docker.exposedByDefault=false",
+      "--providers.docker.network=infra",
+      # entry point
+      "--entryPoints.web.address=:80",
+      "--entryPoints.websecure.address=:443",
+      # letsencrypt 证书
+      "--certificatesresolvers.myresolver.acme.email=traefik@cnbattle.com",
+      "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json",
+      "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web",
+      # 调试模式
+      # "--api.debug=true",
+      # "--log.level=DEBUG",
+    ]
+    ports:
+      - "80:80"
+      - "443:443"
+      - "30188:8080"
+    labels:
+      - "traefik.http.middlewares.cnbattle-auth.basicauth.users=cnbattle:$$apr1$$kft8mcp2$$x0xzpLaJbTA6PuERAPkGu1"
+      - "traefik.http.middlewares.dev-auth.basicauth.users=dev:$$apr1$$0mdgj2tf$$0rTvSJnC8z01c5xLQypHk0"
+      
+      - "traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Origin=*"
+      - "traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Methods=*"
+      - "traefik.http.middlewares.cors.headers.customResponseHeaders.Access-Control-Allow-Headers=*"
+    volumes:
+      - trarfik_letsencrypt:/letsencrypt
+      - /var/run/docker.sock:/var/run/docker.sock
+    # 健康检测
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider --proxy off localhost:8080/ping || exit 1"]
+      interval: 3s
+      retries: 10
+    # 防止容器日志过大
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
+    networks:
+      - infra
+
+  # docker hub 代理
+  crproxy:
+    image: ghcr.io/daocloud/crproxy/crproxy:v0.10.0
+    mem_limit: 128m
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.crproxy.rule=Host(`docker.cnbattle.com`)"
+      - "traefik.http.services.crproxy.loadbalancer.server.port=8080"
+      - "traefik.http.routers.crproxy.entrypoints=websecure"
+      - "traefik.http.routers.crproxy.tls=true"
+      - "traefik.http.routers.crproxy.tls.certresolver=myresolver"
+    command: |
+      --acme-cache-dir=/tmp/acme
+      --acme-hosts=*
+      --default-registry=docker.io
+    # 防止容器日志过大
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
+    tmpfs:
+      - /tmp/acme
+    networks:
+      - infra
+
+  # github 代理
+  ghproxy:
+    image: hunsh/gh-proxy-py:latest
+    mem_limit: 128m
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ghproxy.rule=Host(`gh.cnbattle.com`)"
+      - "traefik.http.services.ghproxy.loadbalancer.server.port=80"
+      - "traefik.http.routers.ghproxy.entrypoints=web, websecure"
+      - "traefik.http.routers.ghproxy.tls=true"
+      - "traefik.http.routers.ghproxy.tls.certresolver=myresolver"
+    # 防止容器日志过大
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "3m"
+    networks:
+      - infra
+
+  # Mysql
+  mysql:
+    image: mysql:8.4
+    mem_limit: 256m # 应还有其他程序故限制
+    restart: always
+    volumes:
+      - ./mysql_data:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: "5be43724-f79e-4b26-81f8-ce3d79b2d26e"
+      MYSQL_DATABASE: "dev"
+      MYSQL_USER: "dev"
+      MYSQL_PASSWORD: "5be43724-f79e-4b26-81f8-ce3d79b2d26e"
+      TZ: Asia/Shanghai 
+    command: [
+      # 关闭二进制日志，主从 数据恢复功能将不可用, 与"--disable-log-bin"参数二选一
+      "--skip-log-bin", 
+      # 设置utf8字符集
+      "--character-set-server=utf8mb4",
+      "--collation-server=utf8mb4_unicode_ci",
+      # InnoDB 恢复 0正常启动，不强制恢复 1-6启用
+      "--innodb-force-recovery=0",
+      # 慢日志 x 秒
+      "--long-query-time=5",
+      "--slow-query-log=0",
+      "--slow-query-log-file=/var/lib/mysql_log/mysql-slow.log",
+      # 禁用性能数据采集，节省内存但无法进行性能分析
+      "--performance-schema=off",
+      # 仅记录最后一次死锁信息，减少日志冗余
+      "--innodb-print-all-deadlocks=OFF",
+      # InnoDB引擎的核心参数，直接影响读写性能
+      "--innodb-buffer-pool-size=64M",
+      "--innodb-log-buffer-size=8M",
+      # 将全局表缓存分割为多个独立分区，减少多线程访问时的锁竞争。每个线程仅需锁定一个分区，提升高并发场景下的性能。
+      "--performance-schema-max-table-instances=100",
+      # 缓存表结构定义（.frm文件），减少元数据解析开销。与table_open_cache不同，它仅缓存表结构而非数据文件，不占用文件描述符。
+      "--table-definition-cache=100",
+      # 控制所有线程同时打开的表的数量上限
+      "--table-open-cache=100",
+      # 最大连接数
+      "--max-connections=30",
+    ]
+    ports:
+      - "0.0.0.0:30601:3306"
+    networks:
+      - infra
+
+  adminer:
+    image: adminer:5
+    mem_limit: 128m
+    restart: always
+    ports:
+      - "0.0.0.0:30901:8080"
+    depends_on:
+      - mysql
+    networks:
+      - infra
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    restart: always
+    environment:
+      PMA_ARBITRARY: 1
+    ports:
+      - "0.0.0.0:30901:80"
+    depends_on:
+      - mysql
+    networks:
+      - infra
+
+  redis:
+    image: redis:7.4
+    restart: always
+    mem_limit: 256m
+    command: 
+      - --requirepass "5be43724-f79e-4b26-81f8-ce3d79b2d26e"
+      - --maxmemory 200mb
+      - --maxmemory-policy allkeys-lru
+      - --save "900 1 300 5"
+      - --appendfsync everysec
+    ports:
+      - "0.0.0.0:30602:6379"
+    volumes:
+      - ./redis_data:/data
+    networks:
+      - infra
+
+  rediscommander:
+    image: rediscommander/redis-commander:latest
+    mem_limit: 128m
+    restart: always
+    ports:
+      - "0.0.0.0:30902:8081"
+    depends_on:
+      - redis
+    environment:
+      HTTP_USER: root
+      HTTP_PASSWORD: 5be43724-f79e-4b26-81f8-ce3d79b2d26e
+      # label:hostname:port:dbIndex:password
+      REDIS_HOSTS: docker-redis:redis:6379:0:5be43724-f79e-4b26-81f8-ce3d79b2d26e
+    networks:
+      - infra
+
+  whoami:
+    image: traefik/whoami
+    restart: always
+    mem_limit: 32m
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`ipv6.cnbattle.com`)"
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+      - "traefik.http.routers.whoami.entrypoints=web, websecure"
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
+    networks:
+      - infra
+
+  gitea:
+    image: docker.gitea.com/gitea:1.23.6
+    restart: always
+    mem_limit: 256m
+    volumes:
+      - ./gitea_data:/var/lib/gitea
+      - ./gitea_config:/etc/gitea
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "30903:3000"
+      - "30922:2222"
+
+volumes:
+  trarfik_letsencrypt:
+
+networks:
+  infra:
